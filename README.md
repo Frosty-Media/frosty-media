@@ -35,5 +35,10 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
+<<<<<<< Updated upstream
 ##### Version 1.0.0 *11/11/14*
 * Initial Release.
+=======
+#### Version 1.0.0 *11/11/14*
+* Initial Release.
+>>>>>>> Stashed changes
