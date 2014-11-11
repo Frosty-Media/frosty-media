@@ -1,0 +1,21 @@
+/* Notifications Table */
+
+th.manage-column.column-notice_id,
+td.notice_id.column-notice_id {
+	width: 5%;
+}
+
+th.manage-column.column-posted,
+td.notice_id.column-posted {
+	width: 15%;
+}
+
+th.manage-column.column-message,
+td.notice_id.column-message {
+	width: 60%;
+}
+
+th.manage-column.column-read,
+td.notice_id.column-read {
+	width: 20%;
+}
