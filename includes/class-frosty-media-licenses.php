@@ -58,7 +58,7 @@ class Frosty_Media_Licenses {
      * @param	array	$sections setting sections array
      */
     private function add_plugins( $plugins = array() ) {
-		$plugins = apply_filters( 'frosty_media_add_settings_sections', $plugins );				
+		$plugins = apply_filters( 'frosty_media_add_plugin_license', $plugins );				
 		$this->plugins = $plugins;
     }
 	
