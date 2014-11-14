@@ -38,7 +38,7 @@ class Frosty_Media_Licenses {
 		$this->dirname	= FM_DIRNAME;
 		$this->title	= __( 'Licenses', FM_DIRNAME );
 		$this->action	= sanitize_title_with_dashes( $this->dirname . ' ' . $this->title );
-		$this->api_url	= FM_API_URL;
+		$this->api_url	= trailingslashit( FM_API_URL ) . 'edd-sl-api/'; // @see	https://github.com/Frosty-Media/edd-sl-api-endpoint
 		$this->handle	= $this->action;
 		
 		/* Register all plugins */

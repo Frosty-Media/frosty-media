@@ -1,8 +1,6 @@
 Frosty Media
 ============
 
-~Current Version:1.0.0~
-
 The core functionallity that manages all Frosty.Media licenses, settings, auto-updates and notifications.
 
 ### Usage
@@ -34,6 +32,11 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 ```
 
 ### Changelog
+
+~Current Version:1.0.1~
+
+##### Version 1.0.1 *11/14/14*
+* Added: edd-sl-api/ enpoint to license API URL.
 
 ##### Version 1.0.0 *11/11/14*
 * Initial Release.
