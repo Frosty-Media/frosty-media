@@ -33,7 +33,11 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.0.1~
+~Current Version:1.0.2~
+
+##### Version 1.0.2 *12/08/14*
+* Update FM_API_URL to https.
+* Updated EDD_SL_Plugin_Updater.php to version 1.5.
 
 ##### Version 1.0.1 *11/14/14*
 * Added: edd-sl-api/ enpoint to license API URL.

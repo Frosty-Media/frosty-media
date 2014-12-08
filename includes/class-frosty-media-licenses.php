@@ -44,7 +44,7 @@ class Frosty_Media_Licenses {
 		/* Register all plugins */
 		$this->add_plugins();
 		
-		add_action( 'admin_init',					array( $this, 'admin_init' ) );
+		add_action( 'admin_init',					array( $this, 'admin_init' ), 1 );
 		add_action( 'admin_menu',					array( $this, 'admin_menu' ), 19 );
 		
 		add_action( 'wp_ajax_' . $this->action,	array( $this, 'license_action_ajax' ) );
@@ -53,13 +53,22 @@ class Frosty_Media_Licenses {
 	}
 
     /**
-     * Set settings sections
+     * Set plugins
      *
-     * @param	array	$sections setting sections array
+     * @param	array	$plugins plugin sections array
      */
     private function add_plugins( $plugins = array() ) {
 		$plugins = apply_filters( 'frosty_media_add_plugin_license', $plugins );				
 		$this->plugins = $plugins;
+    }
+
+    /**
+     * Add plugin
+     *
+     * @param	array
+     */
+    public function add_plugin( $plugin ) {		
+		$this->plugins[] = $plugin;
     }
 	
 	/**
@@ -160,12 +169,6 @@ class Frosty_Media_Licenses {
 			
 			<?php frosty_media_screen_icon(); ?>
 			<?php printf( '<h2>Frosty Media %s</h2>', $this->title ); ?>
-			
-				<?php if ( empty( $this->plugins ) ) : ?>
-				
-					<p><?php _e( 'No Plugins available', FM_DIRNAME ); ?></p></div>
-				
-				<?php endif; ?>
 						
            <div class="postbox" style="margin-top:10px">
 			<form autocomplete="off" action="" id="<?php printf( '%s-%s', FM_DIRNAME, sanitize_title( $this->title ) ); ?>" method="post">
@@ -182,33 +185,40 @@ class Frosty_Media_Licenses {
 	 */
 	public function plugins_html( $minimum = false ) {
 		
-		foreach ( $this->plugins as $key => $plugin ) {
-					
-			$option		= $this->fm->get_option( $plugin['id'], FM_DIRNAME, array() );
-			$license	= isset( $option['license'] ) ? $option['license'] : '';
-			$status		= isset( $option['status'] ) ? $option['status'] : '';
-			$trankey	= $this->fm->get_transient_key( $plugin['id'] . '_license_message' );
-			
-			// Checks license status to display under license key
-			if ( '' === $license ) {
-				$message = $this->strings['enter-key'];
-			}
-			else {
-				//delete_transient( $trankey );
-				if ( false === ( $message = get_transient( $trankey ) ) ) {
-					$message = $this->check_license( $license, $plugin );
-					set_transient( $trankey, $message, DAY_IN_SECONDS );
+		if ( empty( $this->plugins ) ) { ?>
+			<div class="inside">
+				<?php printf( __( '<h4>No Extensions are installed. Browse <a href="%s">here</a></h4>', FM_DIRNAME ), trailingslashit( FM_DIRNAME ) . 'plugins' ); ?>
+			</div><?php
+		}
+		else {
+			foreach ( $this->plugins as $key => $plugin ) {
+						
+				$option		= $this->fm->get_option( $plugin['id'], FM_DIRNAME, array() );
+				$license	= isset( $option['license'] ) ? $option['license'] : '';
+				$status		= isset( $option['status'] ) ? $option['status'] : '';
+				$trankey	= $this->fm->get_transient_key( $plugin['id'] . '_license_message' );
+				
+				// Checks license status to display under license key
+				if ( '' === $license ) {
+					$message = $this->strings['enter-key'];
 				}
+				else {
+					//delete_transient( $trankey );
+					if ( false === ( $message = get_transient( $trankey ) ) ) {
+						$message = $this->check_license( $license, $plugin );
+						set_transient( $trankey, $message, DAY_IN_SECONDS );
+					}
+				}
+				
+				$atts = array(
+					'license'	=> $license,
+					'status'	=> $status,
+					'message'	=> $message,
+					'key'		=> $key
+				);
+				$this->license_html( $plugin, $atts, $minimum );
+				
 			}
-			
-			$atts = array(
-				'license'	=> $license,
-				'status'	=> $status,
-				'message'	=> $message,
-				'key'		=> $key
-			);
-			$this->license_html( $plugin, $atts, $minimum );
-			
 		}
 		
 		wp_nonce_field( FM_PLUGIN_BASENAME . '-license-nonce', 'nonce' ); // One global nonce field

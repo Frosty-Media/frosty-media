@@ -3,7 +3,7 @@
  * Plugin Name: Frosty Media
  * Plugin URI: http://frosty.media/
  * Description: The core functionallity that manages all Frosty.Media licenses, settings, auto-updates and notifications.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  * Text Domain: frosty-media
@@ -38,7 +38,7 @@ final class Frosty_Media {
 	 * Plugin vars
 	 * @return string
 	 */
-	var	$version = '1.0.1',
+	var	$version = '1.0.2',
 		$menu_page;
 
 	/**
@@ -71,7 +71,7 @@ final class Frosty_Media {
 
 		// API URL
 		if ( ! defined( 'FM_API_URL' ) ) {
-			define( 'FM_API_URL', defined( 'WP_LOCAL_DEV' ) ? 'http://frosty.media.dev' : 'http://frosty.media' );
+			define( 'FM_API_URL', defined( 'WP_LOCAL_DEV' ) ? 'http://frosty.media.dev' : 'https://frosty.media' );
 		}
 
 		// Plugin version
@@ -155,7 +155,7 @@ final class Frosty_Media {
 				'github_url'			=> 'https://github.com/Frosty-Media/frosty-media', // the github url of your github repo
 				'zip_url'				=> 'https://github.com/Frosty-Media/frosty-media/zipball/master', // the zip url of the github repo
 				'sslverify'			=> true, // wether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
-				'requires'				=> '4.1', // which version of WordPress does your plugin require?
+				'requires'				=> '3.8', // which version of WordPress does your plugin require?
 				'tested'				=> '4.1', // which version of WordPress is your plugin tested up to?
 				'readme'				=> 'README.md', // which file to use as the readme for the version number
 				'access_token'			=> '', // Access private repositories by authorizing under Appearance > Github Updates when this example plugin is installed
