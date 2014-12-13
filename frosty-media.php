@@ -3,7 +3,7 @@
  * Plugin Name: Frosty Media
  * Plugin URI: http://frosty.media/
  * Description: The core functionallity that manages all Frosty.Media licenses, settings, auto-updates and notifications.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  * Text Domain: frosty-media
@@ -38,7 +38,7 @@ final class Frosty_Media {
 	 * Plugin vars
 	 * @return string
 	 */
-	var	$version = '1.0.4',
+	var	$version = '1.0.5',
 		$menu_page;
 
 	/**
@@ -125,6 +125,7 @@ final class Frosty_Media {
 	private function includes() {
 		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/libraries/github-updater/updater.php' );
 		
+		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/check-folder-structure.php' );
 		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/class-dashboard.php' );
 		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/class-fm-common.php' );
 		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/class-frosty-media-notifications.php' );
@@ -207,7 +208,7 @@ final class Frosty_Media {
 		<div class="wrap">
 
 			<?php frosty_media_screen_icon(); ?>
-			<h2><?php printf( 'Frosty Media %s', __( 'Dashboard', FM_DIRNAME ) ); ?></h2>
+			<h2><?php printf( 'Frosty Media %s %s', __( 'Dashboard', FM_DIRNAME ), '<small class="">v.' . FM_VERSION . '</small>' ); ?></h2>
 
 			<div id="dashboard-widgets-wrap">
 

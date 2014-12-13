@@ -33,7 +33,10 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.0.4~
+~Current Version:1.0.5~
+
+##### Version 1.0.5 *12/12/14*
+* Rename folder if installed via GitHub zipball.
 
 ##### Version 1.0.4 *12/12/14*
 * Fix: Possible empty array in notifications on first activation.
