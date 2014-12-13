@@ -18,7 +18,6 @@ class Frosty_Media_Notifications {
 	 * @since 1.0.0
 	 * @type string
 	 */
-	protected $fm;
 	protected $dirname;
 	protected $title;
 	protected $action;
@@ -26,7 +25,6 @@ class Frosty_Media_Notifications {
 	
 	public function __construct() {
 		
-		$this->fm		= FROSTYMEDIA();
 		$this->dirname	= FM_DIRNAME;
 		$this->title	= __( 'Notifications', FM_DIRNAME );
 		$this->action	= sanitize_title_with_dashes( $this->dirname . ' ' . $this->title );
@@ -120,7 +118,7 @@ class Frosty_Media_Notifications {
 		$option		= get_option( FM_DIRNAME, array() );
 		$title		= strtolower( $this->title );
 		$notices	= isset( $option[ $title ] ) ? $option[ $title ] : array();
-		$trankey	= $this->fm->get_transient_key( FM_DIRNAME . '_notifications' );
+		$trankey	= FM_Common::get_transient_key( FM_DIRNAME . '_notifications' );
 		
 		if ( $delete_all ) {
 			$option[ $title ]	= array();
@@ -170,7 +168,7 @@ class Frosty_Media_Notifications {
 	public function admin_notices() {
 		
 		$notices	= $this->get_notices();
-		$trankey	= $this->fm->get_transient_key( FM_DIRNAME . '_notifications' );
+		$trankey	= FM_Common::get_transient_key( FM_DIRNAME . '_notifications' );
 		//var_dump( $notices );
 		
 		if ( empty( $notices ) || false === ( get_transient( $trankey ) ) ) {
@@ -221,7 +219,6 @@ class Frosty_Media_Notifications {
 				array(
 					'timeout'		=> 15,
 					'sslverify'	=> false,
-					'blocking'		=> false,
 				)
 			);
 			

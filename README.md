@@ -33,7 +33,11 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.0.2~
+~Current Version:1.0.3~
+
+##### Version 1.0.3 *12/12/14*
+* Added FM_Common static class.
+* Cleaned up code.
 
 ##### Version 1.0.2 *12/08/14*
 * Update FM_API_URL to https.

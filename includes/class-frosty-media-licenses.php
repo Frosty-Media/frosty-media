@@ -25,7 +25,6 @@ class Frosty_Media_Licenses {
 	 * @since 1.0.0
 	 * @type string
 	 */
-	protected $fm;
 	protected $dirname;
 	protected $title;
 	protected $action;
@@ -34,7 +33,6 @@ class Frosty_Media_Licenses {
 	
 	public function __construct() {
 		
-		$this->fm		= FROSTYMEDIA();
 		$this->dirname	= FM_DIRNAME;
 		$this->title	= __( 'Licenses', FM_DIRNAME );
 		$this->action	= sanitize_title_with_dashes( $this->dirname . ' ' . $this->title );
@@ -90,7 +88,7 @@ class Frosty_Media_Licenses {
 		
 		foreach ( $this->plugins as $plugin ) {
 			
-			$option  = $this->fm->get_option( $plugin['id'], FM_DIRNAME, array() );
+			$option  = FM_Common::get_option( $plugin['id'], FM_DIRNAME, array() );
 			$license = isset( $option['license'] ) ? $option['license'] : '';
 			$updater = new EDD_SL_Plugin_Updater( $this->api_url, $plugin['file'],
 				array(
@@ -143,7 +141,7 @@ class Frosty_Media_Licenses {
 		$this->submenu_page = add_submenu_page(
 			$this->dirname,
 			sprintf( 'Frosty Media %s %s', $this->title, __( 'Submenu Page', FM_DIRNAME ) ),
-			sprintf( '%s', $this->title, $this->fm->update_html() ), // Maybe add second '%s' for update_html() ??
+			sprintf( '%s', $this->title, FROSTYMEDIA()->update_html() ), // Maybe add second '%s' for update_html() ??
 			'manage_options',
 			trailingslashit( FM_DIRNAME ) . strtolower( $this->title ),
 			array( $this, 'plugin_page' )
@@ -193,10 +191,10 @@ class Frosty_Media_Licenses {
 		else {
 			foreach ( $this->plugins as $key => $plugin ) {
 						
-				$option		= $this->fm->get_option( $plugin['id'], FM_DIRNAME, array() );
+				$option		= FM_Common::get_option( $plugin['id'], FM_DIRNAME, array() );
 				$license	= isset( $option['license'] ) ? $option['license'] : '';
 				$status		= isset( $option['status'] ) ? $option['status'] : '';
-				$trankey	= $this->fm->get_transient_key( $plugin['id'] . '_license_message' );
+				$trankey	= FM_Common::get_transient_key( $plugin['id'] . '_license_message' );
 				
 				// Checks license status to display under license key
 				if ( '' === $license ) {
@@ -373,8 +371,8 @@ class Frosty_Media_Licenses {
 
 		// $response->license will be either "active" or "inactive"
 		if ( $license_data && isset( $license_data->license ) ) {
-			$trankey							= $this->fm->get_transient_key( $plugin_id . '_license_message' );
-			$option								= $this->fm->get_option( $plugin_id, FM_DIRNAME, array() );
+			$trankey							= FM_Common::get_transient_key( $plugin_id . '_license_message' );
+			$option								= FM_Common::get_option( $plugin_id, FM_DIRNAME, array() );
 			$option[$plugin_id]['license']	= trim( $license );
 			$option[$plugin_id]['status']		= trim( $license_data->license );
 		
@@ -403,8 +401,8 @@ class Frosty_Media_Licenses {
 
 		// $license_data->license will be either "deactivated" or "failed"
 		if ( $license_data && ( $license_data->license == 'deactivated' ) ) {
-			$trankey							= $this->fm->get_transient_key( $plugin_id . '_license_message' );
-			$option								= $this->fm->get_option( $plugin_id, FM_DIRNAME, array() );
+			$trankey							= FM_Common::get_transient_key( $plugin_id . '_license_message' );
+			$option								= FM_Common::get_option( $plugin_id, FM_DIRNAME, array() );
 			$option[$plugin_id]['license']	= trim( $license );
 			$option[$plugin_id]['status']		= '';
 		
@@ -497,10 +495,10 @@ class Frosty_Media_Licenses {
 			$message = $strings['license-status-unknown'];
 		}
 		
-		$option										= $this->fm->get_option( $plugin_args['id'], FM_DIRNAME, array() );
+		$option										= FM_Common::get_option( $plugin_args['id'], FM_DIRNAME, array() );
 		$status										= isset( $option[$plugin_args['id']]['status'] ) ? $option[$plugin_args['id']]['status'] : '';
 		$option[$plugin_args['id']]['status']	= trim( $license_data->license );
-		$trankey									= $this->fm->get_transient_key( $plugin_args['id'] . '_license_message' );
+		$trankey									= FM_Common::get_transient_key( $plugin_args['id'] . '_license_message' );
 		
 		if ( $update_option ) {
 			if ( !empty( $status ) && $status != $option[$plugin_args['id']]['status'] ) {

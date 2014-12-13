@@ -3,7 +3,7 @@
  * Plugin Name: Frosty Media
  * Plugin URI: http://frosty.media/
  * Description: The core functionallity that manages all Frosty.Media licenses, settings, auto-updates and notifications.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  * Text Domain: frosty-media
@@ -38,7 +38,7 @@ final class Frosty_Media {
 	 * Plugin vars
 	 * @return string
 	 */
-	var	$version = '1.0.2',
+	var	$version = '1.0.3',
 		$menu_page;
 
 	/**
@@ -126,6 +126,7 @@ final class Frosty_Media {
 		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/libraries/github-updater/updater.php' );
 		
 		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/class-dashboard.php' );
+		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/class-fm-common.php' );
 		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/class-frosty-media-notifications.php' );
 		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/class-frosty-media-licenses.php' );
 		require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/misc-functions.php' );
@@ -155,7 +156,7 @@ final class Frosty_Media {
 				'github_url'			=> 'https://github.com/Frosty-Media/frosty-media', // the github url of your github repo
 				'zip_url'				=> 'https://github.com/Frosty-Media/frosty-media/zipball/master', // the zip url of the github repo
 				'sslverify'			=> true, // wether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
-				'requires'				=> '3.8', // which version of WordPress does your plugin require?
+				'requires'				=> '3.9', // which version of WordPress does your plugin require?
 				'tested'				=> '4.1', // which version of WordPress is your plugin tested up to?
 				'readme'				=> 'README.md', // which file to use as the readme for the version number
 				'access_token'			=> '', // Access private repositories by authorizing under Appearance > Github Updates when this example plugin is installed
@@ -179,7 +180,7 @@ final class Frosty_Media {
 			'manage_options',
 			FM_DIRNAME,
 			array( $this, 'plugin_page' ),
-			$this->get_data_uri( 'svg/frosty-media.svg', 'svg+xml' ),
+			FM_Common::get_data_uri( 'svg/frosty-media.svg', 'svg+xml' ),
 			'80.0000001'
 		);
 
@@ -245,51 +246,6 @@ final class Frosty_Media {
 		});
 		</script><?php
 	}
-
-	/**
-	 * Helper function to return the data URI.
-	 */
-	public function get_data_uri( $_image, $mime = '' ) {
-
-		$image  = trailingslashit( FM_PLUGIN_URL );
-		$image .= $_image;
-
-		$data = base64_encode( file_get_contents( $image ) );
-
-		return !empty( $data ) ? 'data:image/' . $mime . ';base64,' . $data : '';
-	}
-
-	/**
-	 * Get's the cached transient key.
-	 *
-	 * @since v.1.0
-	 * @return string
-	 */
-	public function get_transient_key( $input ) {
-		$key = 'frosty_media_';
-		$key = $key . substr( md5( $input ), 0, 45 - strlen( $key ) );
-
-		return $key;
-	}
-
-    /**
-     * Get the value of a settings field
-     *
-     * @param string  $option  settings field name
-     * @param string  $section the section name this field belongs to
-     * @param string  $default default text if it's not found
-     * @return string
-     */
-    public function get_option( $option, $section = FM_DIRNAME, $default = '' ) {
-
-        $options = get_option( $section );
-
-        if ( isset( $options[$option] ) ) {
-            return $options[$option];
-        }
-
-        return $default;
-    }
 
 }
 
