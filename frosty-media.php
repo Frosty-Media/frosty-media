@@ -71,7 +71,7 @@ final class Frosty_Media {
 
 		// API URL
 		if ( ! defined( 'FM_API_URL' ) ) {
-			define( 'FM_API_URL', defined( 'WP_LOCAL_DEV' ) ? 'http://frosty.media.dev' : 'https://frosty.media' );
+			define( 'FM_API_URL', 'https://frosty.media' );
 		}
 
 		// Plugin version
