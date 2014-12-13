@@ -167,14 +167,17 @@ class Frosty_Media_Notifications {
 	 */
 	public function admin_notices() {
 		
-		$notices	= $this->get_notices();
+		$notices	= $this->get_notices(true);
 		$trankey	= FM_Common::get_transient_key( FM_DIRNAME . '_notifications' );
-		//var_dump( $notices );
+		//var_dump( $notices ); exit;
 		
 		if ( empty( $notices ) || false === ( get_transient( $trankey ) ) ) {
-			$this->wp_remote_get( $this->api_url, $trankey );
-			//var_dump( $notices );
+			$notices = $this->wp_remote_get( $this->api_url, $trankey );
+			//var_dump( $notices ); exit;
 		}
+		
+		if ( !is_array( $notices ) )
+			return;
 		
 		reset( $notices );					// Move the internal pointer to the first element of the array
 		$key_id 	= key( $notices ); 	// Fetches the key of the element pointed to by the internal pointer

@@ -33,7 +33,10 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.0.3~
+~Current Version:1.0.4~
+
+##### Version 1.0.4 *12/12/14*
+* Fix: Possible empty array in notifications on first activation.
 
 ##### Version 1.0.3 *12/12/14*
 * Added FM_Common static class.
