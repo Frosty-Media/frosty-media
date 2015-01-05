@@ -1,4 +1,4 @@
-Frosty Media
+Frosty Media (License Manager)
 ============
 
 The core functionallity that manages all Frosty.Media licenses, settings, auto-updates and notifications.
@@ -33,7 +33,11 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.0.5~
+~Current Version:1.0.6~
+
+##### Version 1.0.6 *01/05/15*
+* Proper deactivation and reactivation of plugin after GitHub folder rename.
+* Fixed issue #1.
 
 ##### Version 1.0.5 *12/12/14*
 * Rename folder if installed via GitHub zipball.

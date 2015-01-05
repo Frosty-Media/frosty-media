@@ -111,6 +111,7 @@ class Frosty_Media_Notifications {
 	/**
 	 * Helper function to get the notices array and return them.
 	 *
+	 * Look into updating $delete_all to maybe just wipe the latest KEY or just the latest KEY read/read_date. - 01/05/2015
 	 */
 	public function get_notices( $delete_all = false ) {
 		
@@ -163,11 +164,12 @@ class Frosty_Media_Notifications {
 	}
 	
 	/**
-	 * Renders the administration notice. Also renders a hidden nonce used for security when processing the AJAX request.
+	 * Renders the administration notice.
+	 * Also renders a hidden nonce used for security when processing the AJAX request.
 	 */
 	public function admin_notices() {
 		
-		$notices	= $this->get_notices(true);
+		$notices	= $this->get_notices(); // Remove 'true' to delete ALL.
 		$trankey	= FM_Common::get_transient_key( FM_DIRNAME . '_notifications' );
 		//var_dump( $notices ); exit;
 		

@@ -3,14 +3,14 @@
  * Plugin Name: Frosty Media
  * Plugin URI: http://frosty.media/
  * Description: The core functionallity that manages all Frosty.Media licenses, settings, auto-updates and notifications.
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  * Text Domain: frosty-media
  * GitHub Plugin URI: https://github.com/Frosty-Media/frosty-media
  * GitHub Branch: master
  *
- * @copyright 2014
+ * @copyright 2014 - 2015
  * @author Austin Passy
  * @link http://austin.passy.co/
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -38,7 +38,7 @@ final class Frosty_Media {
 	 * Plugin vars
 	 * @return string
 	 */
-	var	$version = '1.0.5',
+	var	$version = '1.0.6',
 		$menu_page;
 
 	/**
@@ -263,9 +263,11 @@ endif; // End if class_exists check
  *
  * @return The one true Instance
  */
-function FROSTYMEDIA() {
-	return Frosty_Media::instance();
-}
+if ( !function_exists( 'FROSTYMEDIA' ) ) :
+	function FROSTYMEDIA() {
+		return Frosty_Media::instance();
+	}
+endif;
 
 // Out of the frying pan, and into the fire.
 FROSTYMEDIA();
