@@ -293,7 +293,10 @@ class Frosty_Media_Licenses {
 			if ( $_POST['plugin_id'] !== $plugin['id'] )
 				continue;
 			
-			$license		= $_POST['license'];
+			//if ( !isset( $_POST[ $plugin['id'] . '[license_key]' ] ) )
+				//continue;
+				
+			$license		= isset( $_POST[ $plugin['id'] . '[license_key]' ] ) ? $_POST[ $plugin['id'] . '[license_key]' ] : '';
 			$plugin_action	= $_POST['plugin_action'];
 			
 			if ( $plugin_action === $plugin['id'] . '_activate' ) {
@@ -372,7 +375,8 @@ class Frosty_Media_Licenses {
 		// $response->license will be either "active" or "inactive"
 		if ( $license_data && isset( $license_data->license ) ) {
 			$trankey							= FM_Common::get_transient_key( $plugin_id . '_license_message' );
-			$option								= FM_Common::get_option( $plugin_id, FM_DIRNAME, array() );
+			//$option							= FM_Common::get_option( $plugin_id, FM_DIRNAME, array() );
+			$option								= get_option( FM_DIRNAME, array() );
 			$option[$plugin_id]['license']	= trim( $license );
 			$option[$plugin_id]['status']		= trim( $license_data->license );
 		
@@ -402,7 +406,8 @@ class Frosty_Media_Licenses {
 		// $license_data->license will be either "deactivated" or "failed"
 		if ( $license_data && ( $license_data->license == 'deactivated' ) ) {
 			$trankey							= FM_Common::get_transient_key( $plugin_id . '_license_message' );
-			$option								= FM_Common::get_option( $plugin_id, FM_DIRNAME, array() );
+			//$option							= FM_Common::get_option( $plugin_id, FM_DIRNAME, array() );
+			$option								= get_option( FM_DIRNAME, array() );
 			$option[$plugin_id]['license']	= trim( $license );
 			$option[$plugin_id]['status']		= '';
 		
@@ -495,7 +500,8 @@ class Frosty_Media_Licenses {
 			$message = $strings['license-status-unknown'];
 		}
 		
-		$option										= FM_Common::get_option( $plugin_args['id'], FM_DIRNAME, array() );
+		//$option									= FM_Common::get_option( $plugin_args['id'], FM_DIRNAME, array() );
+		$option										= get_option( FM_DIRNAME, array() );
 		$status										= isset( $option[$plugin_args['id']]['status'] ) ? $option[$plugin_args['id']]['status'] : '';
 		$option[$plugin_args['id']]['status']	= trim( $license_data->license );
 		$trankey									= FM_Common::get_transient_key( $plugin_args['id'] . '_license_message' );
