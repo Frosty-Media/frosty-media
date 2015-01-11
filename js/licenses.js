@@ -30,9 +30,9 @@
 
 			$this			= $(this);
 			$plugin_id		= $this.parents('div.inside').data('plugin-id');
-			$license		= $this.parent().find('input[name="' + $plugin_id + '[license_key]"]');
+			$license		= $this.parents('div.inside').find('input[name="' + $plugin_id + '[license_key]"]');
 			$plugin_action	= $this.prop('name');
-
+			
 			$this.before('<img id="img-' + $plugin_id + '" src="' + frosty_media_licenses.loading + '" style="margin:6.5px 0px 0px -30px;position:absolute;">');
 
 			// Initiate a request to the server-side
