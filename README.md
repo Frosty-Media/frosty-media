@@ -33,14 +33,18 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.0.7~
+~Current Version:1.0.8~
+
+##### Version 1.0.8 *01/11/15*
+* Double check notices aren't NULL.
+* Fix: licenses sending empty license_key.
 
 ##### Version 1.0.7 *01/05/15*
-* Fix license activation update overwriting the settings array.
+* Fix: license activation update overwriting the settings array.
 
 ##### Version 1.0.6 *01/05/15*
 * Proper deactivation and reactivation of plugin after GitHub folder rename.
-* Fixed issue #1.
+* Fix: GitHub issue #1.
 
 ##### Version 1.0.5 *12/12/14*
 * Rename folder if installed via GitHub zipball.
