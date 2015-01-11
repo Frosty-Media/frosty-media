@@ -178,6 +178,7 @@ class Frosty_Media_Notifications {
 			//var_dump( $notices ); exit;
 		}
 		
+		// If it's not an array, lets bail.
 		if ( !is_array( $notices ) )
 			return;
 		
@@ -185,6 +186,11 @@ class Frosty_Media_Notifications {
 		$key_id 	= key( $notices ); 	// Fetches the key of the element pointed to by the internal pointer
 		$notice 	= $notices[ $key_id ];	// Get latest notice.
 		
+		// In case there is an error and a null key gets entered.
+		if ( null === $notice )
+			return;
+		
+		// If the latest notice has been read, lets bail.
 		if ( true === $notice->read )
 			return;
 		
