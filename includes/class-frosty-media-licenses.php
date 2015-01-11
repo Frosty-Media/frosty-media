@@ -293,15 +293,12 @@ class Frosty_Media_Licenses {
 			if ( $_POST['plugin_id'] !== $plugin['id'] )
 				continue;
 			
-			//if ( !isset( $_POST[ $plugin['id'] . '[license_key]' ] ) )
-				//continue;
-				
-			$license		= isset( $_POST[ $plugin['id'] . '[license_key]' ] ) ? $_POST[ $plugin['id'] . '[license_key]' ] : '';
+			$license_key	= $_POST['license'];
 			$plugin_action	= $_POST['plugin_action'];
 			
 			if ( $plugin_action === $plugin['id'] . '_activate' ) {
 				if ( !$ajax || check_admin_referer( FM_PLUGIN_BASENAME . '-license-nonce', 'nonce' ) ) {
-					if ( $this->activate_license( $license, $plugin['id'], $plugin['title'] ) ) {
+					if ( $this->activate_license( $license_key, $plugin['id'], $plugin['title'] ) ) {
 						die( 'success' );
 					}
 					die( 'error' );
@@ -310,7 +307,7 @@ class Frosty_Media_Licenses {
 	
 			if ( $plugin_action === $plugin['id'] . '_deactivate' ) {
 				if ( !$ajax || check_admin_referer( FM_PLUGIN_BASENAME . '-license-nonce', 'nonce' ) ) {
-					if ( $this->deactivate_license( $license, $plugin['id'], $plugin['title'] ) ) {
+					if ( $this->deactivate_license( $license_key, $plugin['id'], $plugin['title'] ) ) {
 						die( 'success' );
 					}
 					die( 'error' );
@@ -319,8 +316,7 @@ class Frosty_Media_Licenses {
 	
 			if ( $plugin_action === $plugin['id'] . '_check_license' ) {
 				if ( !$ajax || check_admin_referer( FM_PLUGIN_BASENAME . '-license-nonce', 'nonce' ) ) {
-					if ( false === ( $message = $this->check_license( $license, $plugin, $update_option = true ) ) ) {
-						//echo 'success';
+					if ( false === ( $message = $this->check_license( $license_key, $plugin, $update_option = true ) ) ) {
 						die( $message );
 					}
 					die( 'error' );
