@@ -316,10 +316,8 @@ class Frosty_Media_Licenses {
 	
 			if ( $plugin_action === $plugin['id'] . '_check_license' ) {
 				if ( !$ajax || check_admin_referer( FM_PLUGIN_BASENAME . '-license-nonce', 'nonce' ) ) {
-					if ( false === ( $message = $this->check_license( $license_key, $plugin, $update_option = true ) ) ) {
-						die( $message );
-					}
-					die( 'error' );
+					$message = $this->check_license( $license_key, $plugin, $update_option = true );
+					die( $message );
 				}
 			}
 		}
@@ -506,9 +504,7 @@ class Frosty_Media_Licenses {
 			if ( !empty( $status ) && $status != $option[$plugin_args['id']]['status'] ) {
 				update_option( FM_DIRNAME, $option );
 				delete_transient( $trankey );
-				return true;
 			}
-			return false;
 		}
 
 		return $message;
