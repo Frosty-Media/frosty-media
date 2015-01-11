@@ -530,7 +530,7 @@ class Frosty_Media_Licenses {
 					'utm_source'	=> 'wordpress',
 					'utm_medium'	=> 'frosty-media-renew',
 					'utm_campaign'	=> 'frosty-media-license' ),
-				sprintf( '%s/checkout/', untrailingslashit( esc_url( $this->api_url ) ) )
+				sprintf( '%s/checkout/', untrailingslashit( esc_url( FM_API_URL ) ) )
 				);
 			return $url;
 		}
