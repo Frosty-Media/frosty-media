@@ -15,14 +15,14 @@ if ( !defined( 'ABSPATH' ) ) exit;
 class Frosty_Media_Dashboad {
 	
 	function __construct() {
-		add_action( 'admin_menu',							array( $this, 'admin_menu' ), 99 );
+		add_action( 'admin_menu',						array( $this, 'admin_menu' ), 99 );
 	}
 	
 	/**
 	 *
 	 */
 	function admin_menu() {
-		add_action( 'load-' . FROSTYMEDIA()->menu_page, array( $this, 'add_meta_boxs' ) );
+		add_action( 'load-' . FROSTYMEDIA()->menu_page,	array( $this, 'add_meta_boxs' ) );
 	}
 	
 	/**
@@ -37,7 +37,7 @@ class Frosty_Media_Dashboad {
 			add_meta_box(
 				$title . '-debug',
 				'var_dump( FROSTYMEDIA() )',
-				function() { var_dump( FROSTYMEDIA() ); },
+				create_function( '', 'var_dump( FROSTYMEDIA() );' ),
 				FROSTYMEDIA()->menu_page,
 				'bottom',
 				'core'
