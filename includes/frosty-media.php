@@ -119,8 +119,8 @@ final class Core {
      */
     private function actions() {
 
-        add_action( 'admin_init', array( $this, 'github_updater' ) );
         add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+        add_action( 'admin_init', array( $this, 'github_updater' ) );
     }
 
     private function instantiations() {
@@ -205,24 +205,22 @@ final class Core {
 
         <div id="dashboard-widgets-wrap">
 
-        <div id="dashboard-widgets" class="metabox-holder">
+            <div id="dashboard-widgets" class="metabox-holder">
 
-            <div id="postbox-container-2" class="postbox-container">
-                <?php do_meta_boxes( $this->menu_page, 'side', '' ); ?>
+                <div id="postbox-container-2" class="postbox-container">
+                    <?php do_meta_boxes( $this->menu_page, 'side', '' ); ?>
+                </div>
+
+                <div id="postbox-container-1" class="postbox-container">
+                    <?php do_meta_boxes( $this->menu_page, 'normal', '' ); ?>
+                </div>
+
+                <br class="clear">
+
+                <?php do_meta_boxes( $this->menu_page, 'bottom', '' ); ?>
+                <br class="clear">
+
             </div>
-
-            <div id="postbox-container-1" class="postbox-container">
-                <?php do_meta_boxes( $this->menu_page, 'normal', '' ); ?>
-            </div>
-
-            <br class="clear">
-
-            <?php do_meta_boxes( $this->menu_page, 'bottom', '' ); ?>
-            <br class="clear">
-
-        </div>
-
-        </form>
 
         </div><?php
     }

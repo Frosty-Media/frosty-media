@@ -32,7 +32,8 @@
 						}
 						
 						if ( $table.length ) {
-							$table.find('a[data-notice-id="' + $this.data('notice-id') + '"]').fadeTo(250,0).parents('tr').css('background','');
+                            $table.find('a[data-notice-id="' + $this.data('notice-id') + '"]').fadeTo(250,0).parents('tr').css('background','');
+                            $table.find('a[data-notice-id="' + $this.data('notice-id') + '"]').parents('td').find('strong').text('Yes');
 						}
 					}
 					else {

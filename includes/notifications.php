@@ -36,41 +36,41 @@ class Notifications {
 		$this->action	= sanitize_title_with_dashes( $this->dirname . ' ' . $this->title );
 		$this->api_url	= add_query_arg( 'get_notifications', 'true', FM_API_URL );
 		$this->handle	= $this->action;
-				
+
+        add_action( 'admin_menu', array( $this, 'admin_menu' ), 19 );
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
-		add_action( 'admin_menu', array( $this, 'admin_menu' ), 19 );
 		
 		add_action( 'wp_ajax_' . $this->action,	array( $this, 'ajax' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
+
+    /**
+     * Register the plugin page
+     */
+    public function admin_menu() {
+
+        add_submenu_page(
+            $this->dirname,
+            sprintf( 'Frosty Media %s %s', $this->title, __( 'Submenu Page', FM_DIRNAME ) ),
+            sprintf( '%s', $this->title ),
+            'manage_options',
+            trailingslashit( FM_DIRNAME ) . strtolower( $this->title ),
+            array( $this, 'plugin_page' )
+        );
+    }
+
+    /**
+     * Display the plugin settings options page
+     */
+    public function plugin_page() {
+        include( FM_PLUGIN_DIR . 'views/list-table.php' );
+    }
 	
 	/**
 	 *
 	 */
 	public function admin_init() {
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
-	}
-
-    /**
-	 * Register the plugin page
-	 */
-	public function admin_menu() {
-		
-		add_submenu_page(
-			$this->dirname,
-			sprintf( 'Frosty Media %s %s', $this->title, __( 'Submenu Page', FM_DIRNAME ) ),
-			sprintf( '%s', $this->title ),
-			'manage_options',
-			trailingslashit( FM_DIRNAME ) . strtolower( $this->title ),
-			array( $this, 'plugin_page' )
-		);
-	}
-
-	/**
-	 * Display the plugin settings options page
-	 */
-	public function plugin_page() {
-        include( FM_PLUGIN_DIR . 'views/list-table.php' );
 	}
 
 	/**
@@ -97,20 +97,18 @@ class Notifications {
 	 *
 	 * Look into updating $delete_all to maybe just wipe the latest KEY or just the latest KEY read/read_date. - 01/05/2015
 	 */
-	public function get_notices( $delete_all = true ) {
-		
-		//delete_option( FM_DIRNAME );
+	public function get_notices( $delete_all = false ) {
+
 		$option = get_option( FM_DIRNAME, array() );
 		$title = strtolower( $this->title );
 		$notices = isset( $option[ $title ] ) ? $option[ $title ] : array();
-		$trankey = Common::get_transient_key( FM_DIRNAME . '_notifications' );
 		
 		if ( $delete_all ) {
 			$option[ $title ] = array();
 			
-			delete_transient( $trankey );
+			delete_transient( Common::get_transient_key( FM_DIRNAME . '_notifications' ) );
 			update_option( FM_DIRNAME, $option );
-		}		
+		}
 		
 		return $notices;
 	}
@@ -120,24 +118,23 @@ class Notifications {
 	 *
 	 * @since 1.0.0
      */
-	public function maybe_update_notices( $new_notices ) {
+	public function maybe_update_notices( $new_notice ) {
 		
 		$option	= get_option( FM_DIRNAME, array() );
 		$title = strtolower( $this->title );
-		$_notices = $option[ $title ] = isset( $option[ $title ] ) ? $option[ $title ] : array();
+		$_notices = isset( $option[ $title ] ) ? $option[ $title ] : array();
 		
-		reset( $_notices );
-		
-		if ( isset( $_notices[ key( $_notices ) ] ) && $_notices[ key( $_notices ) ]->date !== $new_notices[ key( $new_notices ) ]->date ) {
-			array_unshift( $option[ $title ], $new_notices[ key( $new_notices ) ] ); // Add the new notice to the beginning of the array.
-			$_notices = $option[ $title ]; 			// Update the $_notices variable
+		if ( isset( $_notices[ key( $_notices ) ] ) && $_notices[ key( $_notices ) ]->date < $new_notice[ key( $new_notices ) ]->date ) {
+			array_unshift( $_notices, $new_notice[ key( $new_notice ) ] ); // Add the new notice to the beginning of the array.
+            $_notices[] = $new_notice;
             $_notices = array_filter( $_notices, array( $this, 'is_not_null' ) );
-			update_option( FM_DIRNAME, $_notices );	// Update the new notices
+            $option[ $title ] = $_notices;
+			update_option( FM_DIRNAME, $option );	// Update the new notices
 		}
 		// First time install...
 		elseif ( empty( $_notices ) ) {
-			$_notices = $option[ $title ] = $new_notices;
-			update_option( FM_DIRNAME, $_notices );	// Update the new notices
+			$option[ $title ] = $new_notice;
+			update_option( FM_DIRNAME, $option );	// Update the new notices
 		}
 				
 		return $_notices;
@@ -150,20 +147,18 @@ class Notifications {
 	public function admin_notices() {
 		
 		$notices = $this->get_notices(); // Remove 'true' to delete ALL.
-        $notices = array_filter( $notices, array( $this, 'is_not_null' ) );
 		$trankey = Common::get_transient_key( FM_DIRNAME . '_notifications' );
-		var_dump( $notices );
 		
 		if ( empty( $notices ) || false === ( get_transient( $trankey ) ) ) {
 			$notices = $this->wp_remote_get( $this->api_url, $trankey );
-			error_log( print_r( $notices, true ) );
 		}
 		
 		// If it's not an array, lets bail.
-		if ( !is_array( $notices ) )
-			return;
-		
-		reset( $notices ); // Move the internal pointer to the first element of the array
+		if ( empty( $notices ) ) {
+            return;
+        }
+
+        end( $notices );
 		$key_id = key( $notices ); // Fetches the key of the element pointed to by the internal pointer
 		$notice = $notices[ $key_id ]; // Get latest notice.
 		
