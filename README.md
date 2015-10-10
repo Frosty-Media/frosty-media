@@ -35,9 +35,11 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ~Current Version:1.1.0~
 
-##### Version 1.1.0 *10/09/15*
+##### Version 1.1.0 *10/10/15*
 * Code rewrite and cleanup.
 * Introduced namespaced code.
+* Fixed messages not showing up.
+* Fixed license key activation errors.
 
 ##### Version 1.0.9 *01/27/15*
 * Fix: issue #2 - unexpected T_FUNCTION (PHP versions < 5.3).
