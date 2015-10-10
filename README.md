@@ -33,7 +33,11 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.0.9~
+~Current Version:1.1.0~
+
+##### Version 1.1.0 *10/09/15*
+* Code rewrite and cleanup.
+* Introduced namespaced code.
 
 ##### Version 1.0.9 *01/27/15*
 * Fix: issue #2 - unexpected T_FUNCTION (PHP versions < 5.3).

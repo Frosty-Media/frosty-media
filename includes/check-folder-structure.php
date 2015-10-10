@@ -4,6 +4,19 @@
 if ( !defined( 'ABSPATH' ) ) exit;
 
 function frosty_media_check_folder_structure() {
+
+    // When this plugin deactivate, deactivate another plugin too.
+    register_deactivation_hook( __FILE__, function() {
+
+        $dependent = 'frosty-media/frosty-media.php';
+
+        if( !is_plugin_active($dependent) ){
+
+            add_action( 'update_option_active_plugins', function() use ( $dependent ) {
+                activate_plugin( $dependent );
+            });
+        }
+    });
 	
 	if ( true === get_option( 'frosty_media_GitHub_folder_renamed', false ) )
 		return;
@@ -16,12 +29,9 @@ function frosty_media_check_folder_structure() {
 			if ( !function_exists( 'activate_plugin' ) ) {
 				require( ABSPATH . 'wp-admin/includes/plugin.php' );
 			}
-			
-			// Lets deactivate the old plugin.	
+
+            // Lets deactivate the old plugin.
 			deactivate_plugins( 'frosty-media-master/frosty-media.php' );
-			
-			// ...and activate the new one.
-			activate_plugin( 'frosty-media/frosty-media.php' );
 			
 			// Redirect to the dashboard.
 			wp_redirect( admin_url() );

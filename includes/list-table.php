@@ -1,5 +1,7 @@
 <?php
 
+namespace FrostyMedia;
+
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 
@@ -7,19 +9,25 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
 
-// @ref		http://wpengineer.com/2426/wp_list_table-a-step-by-step-guide/
-class FM_Notices_List_Table extends WP_List_Table {
-	
-	protected $frosty_media;
+/**
+ * Class List_Table
+ * @package FrostyMedia
+ *
+ * @ref http://wpengineer.com/2426/wp_list_table-a-step-by-step-guide/
+ */
+class List_Table extends \WP_List_Table {
+
+    var $data;
+
 	protected $action;
-	var $data;
-		
+
+    /**
+     *
+     */
     function __construct() {
-		global $status, $page;
-		
-		$this->frosty_media	= $GLOBALS['frosty_media_notifications'];
-		$this->action			= sanitize_title_with_dashes( FM_DIRNAME . ' Notifications' );
-		$this->data			= $this->frosty_media->get_notices();
+
+        $this->data	= FROSTYMEDIA()->notifications->get_notices();
+		$this->action = sanitize_title_with_dashes( FM_DIRNAME . ' Notifications' );
 		
 		parent::__construct( array(
 			'singular'  => __( 'notice', FM_DIRNAME ),
@@ -28,6 +36,12 @@ class FM_Notices_List_Table extends WP_List_Table {
 		) );
 	}
 
+    /**
+     * @param object $item
+     * @param string $column_name
+     *
+     * @return mixed|string
+     */
 	function column_default( $item, $column_name ) {
 		
 		$notice_id = array_search( $item, $this->items );
@@ -68,30 +82,36 @@ class FM_Notices_List_Table extends WP_List_Table {
 		}
 	}
 
-	function get_columns(){
+    /**
+     * @return array
+     */
+	function get_columns() {
 		$columns = array(
-			'notice_id'	=> __( 'ID', FM_DIRNAME ),
+			'notice_id'	    => __( 'ID', FM_DIRNAME ),
 			'posted'		=> __( 'Posted', FM_DIRNAME ),
 			'message'		=> __( 'Message', FM_DIRNAME ),
 			'read'			=> __( 'Read', FM_DIRNAME )
 		);
 		return $columns;
 	}
-	
+
+    /**
+     * @param int  $per_page
+     * @param bool $pageination
+     */
 	function prepare_items( $per_page = 10, $pageination = false ) {
 		$columns  = $this->get_columns();
 		$hidden   = array();
 		$sortable = array();
 		$this->_column_headers = array( $columns, $hidden, $sortable );
-		
+
 		// First let's sort the data
-		//arsort( $this->data ); // Sort in reverse order and maintain index
-		
+        if ( is_array( $this->data ) ) {
+             arsort( $this->data ); // Sort in reverse order and maintain index
+        }
+
 		$current_page	= $this->get_pagenum();
 		$total_items	= count( $this->data );
-		
-		// only ncessary because we have sample data
-		$this->found_data = array_slice( $this->data, ( ( $current_page - 1 ) * $per_page ), $per_page );
 		
 		if ( !$pageination ) {
 			$this->set_pagination_args( array(
@@ -101,7 +121,7 @@ class FM_Notices_List_Table extends WP_List_Table {
 			) );
 		}
 		
-		$this->items = $this->found_data;
+		$this->items = $this->data;
 	}
 
 }

@@ -1,16 +1,19 @@
 <?php
-/**
- * @package     FrostyMedia
- * @subpackage  Classes/Frosty_Media_Notifications
- * @author      Austin Passy <http://austin.passy.co>
- * @copyright   Copyright (c) 2014, Austin Passy
- * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
- */
+
+namespace FrostyMedia;
 
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
- 
-class Frosty_Media_Notifications {
+
+/**
+ * Class Notifications
+ * @package     FrostyMedia
+ * @subpackage  Classes/Frosty_Media_Notifications
+ * @author      Austin Passy <http://austin.passy.co>
+ * @copyright   Copyright (c) 2015, Austin Passy
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ */
+class Notifications {
 	
 	/**
 	 * Variables
@@ -21,8 +24,11 @@ class Frosty_Media_Notifications {
 	protected $dirname;
 	protected $title;
 	protected $action;
-	protected $api_url; 
-	
+	protected $api_url;
+
+    /**
+     *
+     */
 	public function __construct() {
 		
 		$this->dirname	= FM_DIRNAME;
@@ -30,63 +36,41 @@ class Frosty_Media_Notifications {
 		$this->action	= sanitize_title_with_dashes( $this->dirname . ' ' . $this->title );
 		$this->api_url	= add_query_arg( 'get_notifications', 'true', FM_API_URL );
 		$this->handle	= $this->action;
-				
-		add_action( 'admin_init', 				array( $this, 'admin_init' ) );
-		add_action( 'admin_menu', 				array( $this, 'admin_menu' ), 19 );
+
+        add_action( 'admin_menu', array( $this, 'admin_menu' ), 19 );
+		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		
 		add_action( 'wp_ajax_' . $this->action,	array( $this, 'ajax' ) );
-		add_action( 'admin_enqueue_scripts',		array( $this, 'enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
+
+    /**
+     * Register the plugin page
+     */
+    public function admin_menu() {
+
+        add_submenu_page(
+            $this->dirname,
+            sprintf( 'Frosty Media %s %s', $this->title, __( 'Submenu Page', FM_DIRNAME ) ),
+            sprintf( '%s', $this->title ),
+            'manage_options',
+            trailingslashit( FM_DIRNAME ) . strtolower( $this->title ),
+            array( $this, 'plugin_page' )
+        );
+    }
+
+    /**
+     * Display the plugin settings options page
+     */
+    public function plugin_page() {
+        include( FM_PLUGIN_DIR . 'views/list-table.php' );
+    }
 	
 	/**
 	 *
 	 */
 	public function admin_init() {
-		add_action( 'admin_notices',				array( $this, 'admin_notices' ) );
-	}
-
-    /**
-	 * Register the plugin page
-	 */
-	public function admin_menu() {
-		
-		$this->submenu_page = add_submenu_page(
-			$this->dirname,
-			sprintf( 'Frosty Media %s %s', $this->title, __( 'Submenu Page', FM_DIRNAME ) ),
-			sprintf( '%s', $this->title ),
-			'manage_options',
-			trailingslashit( FM_DIRNAME ) . strtolower( $this->title ),
-			array( $this, 'plugin_page' )
-		);
-		
-		add_action( 'load-' . $this->submenu_page, array( $this, 'load' ) );		
-	}
-	
-	/**
-	 *
-	 */
-	public function load() {
-		
-		if ( !class_exists( 'FM_Notices_List_Table' ) ) {
-			require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/class-fm-notices-list-table.php' );
-		}
-	}
-
-	/**
-	 * Display the plugin settings options page
-	 */
-	public function plugin_page() { ?>
-		<div class="wrap"><?php
-		
-			frosty_media_screen_icon();
-			printf( '<h2>Frosty Media %s</h2>', $this->title );
-			
-			$notices_table = new FM_Notices_List_Table();
-			$notices_table->prepare_items(); 
-			$notices_table->display();
-			
-			?>
-		</div><?php
+		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
 
 	/**
@@ -98,7 +82,7 @@ class Frosty_Media_Notifications {
 		wp_register_script( $this->handle, trailingslashit( FM_PLUGIN_URL ) . 'js/admin.js', array( 'jquery' ), FM_VERSION, false );
 		wp_enqueue_script( $this->handle );
 		
-		$args	= array(
+		$args = array(
 			'action'	=> $this->action,
 			'handle'	=> $this->handle,
 			'dirname'	=> FM_DIRNAME,
@@ -114,19 +98,17 @@ class Frosty_Media_Notifications {
 	 * Look into updating $delete_all to maybe just wipe the latest KEY or just the latest KEY read/read_date. - 01/05/2015
 	 */
 	public function get_notices( $delete_all = false ) {
-		
-		//delete_option( FM_DIRNAME );
-		$option		= get_option( FM_DIRNAME, array() );
-		$title		= strtolower( $this->title );
-		$notices	= isset( $option[ $title ] ) ? $option[ $title ] : array();
-		$trankey	= FM_Common::get_transient_key( FM_DIRNAME . '_notifications' );
+
+		$option = get_option( FM_DIRNAME, array() );
+		$title = strtolower( $this->title );
+		$notices = isset( $option[ $title ] ) ? $option[ $title ] : array();
 		
 		if ( $delete_all ) {
-			$option[ $title ]	= array();
+			$option[ $title ] = array();
 			
-			delete_transient( $trankey );
+			delete_transient( Common::get_transient_key( FM_DIRNAME . '_notifications' ) );
 			update_option( FM_DIRNAME, $option );
-		}		
+		}
 		
 		return $notices;
 	}
@@ -136,27 +118,22 @@ class Frosty_Media_Notifications {
 	 *
 	 * @since 1.0.0
      */
-	public function maybe_update_notices( $new_notices ) {
+	public function maybe_update_notices( $new_notice ) {
 		
-		$option			= get_option( FM_DIRNAME, array() );
-		$title			= strtolower( $this->title );
-		$_notices	 	= $option[ $title ] = isset( $option[ $title ] ) ? $option[ $title ] : array();
+		$option	= get_option( FM_DIRNAME, array() );
+		$title = strtolower( $this->title );
+		$_notices = isset( $option[ $title ] ) ? $option[ $title ] : array();
 		
-		reset( $_notices );
-		/**
-		var_dump( $_notices );
-		echo '<hr>';
-		var_dump( $new_notices );
-		exit;//*/
-		
-		if ( isset( $_notices[ key( $_notices ) ] ) && $_notices[ key( $_notices ) ]->date !== $new_notices[ key( $new_notices ) ]->date ) {
-			array_unshift( $option[ $title ], $new_notices[ key( $new_notices ) ] ); // Add the new notice to the begining of the array.
-			$_notices = $option[ $title ]; 			// Update the $_notices variable
+		if ( isset( $_notices[ key( $_notices ) ] ) && $_notices[ key( $_notices ) ]->date < $new_notice[ key( $new_notices ) ]->date ) {
+			array_unshift( $_notices, $new_notice[ key( $new_notice ) ] ); // Add the new notice to the beginning of the array.
+            $_notices[] = $new_notice;
+            $_notices = array_filter( $_notices, array( $this, 'is_not_null' ) );
+            $option[ $title ] = $_notices;
 			update_option( FM_DIRNAME, $option );	// Update the new notices
 		}
 		// First time install...
 		elseif ( empty( $_notices ) ) {
-			$_notices = $option[ $title ] = $new_notices;
+			$option[ $title ] = $new_notice;
 			update_option( FM_DIRNAME, $option );	// Update the new notices
 		}
 				
@@ -169,26 +146,26 @@ class Frosty_Media_Notifications {
 	 */
 	public function admin_notices() {
 		
-		$notices	= $this->get_notices(); // Remove 'true' to delete ALL.
-		$trankey	= FM_Common::get_transient_key( FM_DIRNAME . '_notifications' );
-		//var_dump( $notices ); exit;
+		$notices = $this->get_notices(); // Remove 'true' to delete ALL.
+		$trankey = Common::get_transient_key( FM_DIRNAME . '_notifications' );
 		
 		if ( empty( $notices ) || false === ( get_transient( $trankey ) ) ) {
 			$notices = $this->wp_remote_get( $this->api_url, $trankey );
-			//var_dump( $notices ); exit;
 		}
 		
 		// If it's not an array, lets bail.
-		if ( !is_array( $notices ) )
-			return;
-		
-		reset( $notices );					// Move the internal pointer to the first element of the array
-		$key_id 	= key( $notices ); 	// Fetches the key of the element pointed to by the internal pointer
-		$notice 	= $notices[ $key_id ];	// Get latest notice.
+		if ( empty( $notices ) ) {
+            return;
+        }
+
+        end( $notices );
+		$key_id = key( $notices ); // Fetches the key of the element pointed to by the internal pointer
+		$notice = $notices[ $key_id ]; // Get latest notice.
 		
 		// In case there is an error and a null key gets entered.
-		if ( null === $notice )
-			return;
+		if ( null === $notice ) {
+            return;
+        }
 		
 		// If the latest notice has been read, lets bail.
 		if ( true === $notice->read )
@@ -216,6 +193,11 @@ class Frosty_Media_Notifications {
      * Helper function to make remote calls
 	 *
 	 * @since 1.0.0
+     * @param bool $url
+     * @param      $transient_key
+     * @param null $expiration
+     *
+     * @return array|bool|mixed|object
      */
     public function wp_remote_get( $url = false, $transient_key, $expiration = null ) {
 		
@@ -226,9 +208,9 @@ class Frosty_Media_Notifications {
 		if ( false === ( $json = get_transient( $transient_key ) ) ) {
 			
 			$response = wp_remote_get(
-				esc_url( $url ),
+				esc_url_raw( $url ),
 				array(
-					'timeout'		=> 15,
+					'timeout'	=> 15,
 					'sslverify'	=> false,
 				)
 			);
@@ -269,15 +251,16 @@ class Frosty_Media_Notifications {
 		if ( !isset( $_POST['notice_id'] ) || !is_numeric( $_POST['notice_id'] ) )
 			die('0');
 			
-		$option		= get_option( FM_DIRNAME, array() );
-		$title		= strtolower( $this->title );
-		$key_id		= absint( $_POST['notice_id'] );
+		$option = get_option( FM_DIRNAME, array() );
+        $option = array_filter( $option, array( $this, 'is_not_null' ) );
+		$title = strtolower( $this->title );
+		$key_id = absint( $_POST['notice_id'] );
 		
 		if ( !isset( $option[ $title ][ $key_id ] ) )
 			die('0');
 			
-		$option[ $title ][ $key_id ]->read		= true;
-		$option[ $title ][ $key_id ]->read_date	= date_i18n( get_option( 'date_format' ), time() );
+		$option[ $title ][ $key_id ]->read = true;
+		$option[ $title ][ $key_id ]->read_date	= date_i18n( 'c', time() );
 					
 		if ( update_option( FM_DIRNAME, $option ) ) {
 			die('1');
@@ -286,6 +269,15 @@ class Frosty_Media_Notifications {
 			die('0');
 		}	
 	}
+
+    /**
+     * @param $var
+     *
+     * @ref http://stackoverflow.com/a/20676918
+     * @return bool
+     */
+    protected function is_not_null ( $var ) {
+        return !is_null( $var );
+    }
 	
 }
-$GLOBALS['frosty_media_notifications'] = new Frosty_Media_Notifications;
