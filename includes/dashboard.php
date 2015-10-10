@@ -1,21 +1,27 @@
 <?php
-/**
- * @package     FrostyMedia
- * @subpackage  Classes/Frosty_Media_Updater
- * @author      Austin Passy <http://austin.passy.co>
- * @copyright   Copyright (c) 2014, Austin Passy
- * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
- *
- * @ref	         https://gist.github.com/bueltge/757903
- */
+
+namespace FrostyMedia;
 
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 
-class Frosty_Media_Dashboad {
-	
+/**
+ * Class Dashboad
+ * @package     FrostyMedia
+ * @subpackage  Classes/Common
+ * @author      Austin Passy <http://austin.passy.co>
+ * @copyright   Copyright (c) 2015, Austin Passy
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ *
+ * @ref	         https://gist.github.com/bueltge/757903
+ */
+class Dashboad {
+
+    /**
+     * Constructor.
+     */
 	function __construct() {
-		add_action( 'admin_menu',						array( $this, 'admin_menu' ), 99 );
+		add_action( 'admin_menu', array( $this, 'admin_menu' ), 99 );
 	}
 	
 	/**
@@ -67,24 +73,14 @@ class Frosty_Media_Dashboad {
 	 *
 	 */
 	function notifications_metabox( $data ) {
-		
-		if ( !class_exists( 'FM_Notices_List_Table' ) ) {
-			require_once( trailingslashit( FM_PLUGIN_DIR ) . 'includes/class-fm-notices-list-table.php' );
-		}
-		
-		$notices_table = new FM_Notices_List_Table();
-		$notices_table->prepare_items( 4, true ); 
-		$notices_table->display();
+        include( FM_PLUGIN_DIR . 'views/list-table.php' );
 	}
 	
 	/**
 	 *
 	 */
 	function license_status_metabox( $data ) {
-		global $frosty_media_licenses;
-		
-		$frosty_media_licenses->plugins_html( $minimum = true );
+		FROSTYMEDIA()->licenses->plugins_html( $minimum = true );
 	}
 	
 }
-$frosty_media_dashboad = new Frosty_Media_Dashboad;

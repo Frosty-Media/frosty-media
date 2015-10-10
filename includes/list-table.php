@@ -1,5 +1,7 @@
 <?php
 
+namespace FrostyMedia;
+
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 
@@ -7,18 +9,25 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
 
-// @ref		http://wpengineer.com/2426/wp_list_table-a-step-by-step-guide/
-class FM_Notices_List_Table extends WP_List_Table {
+/**
+ * Class List_Table
+ * @package FrostyMedia
+ *
+ * @ref http://wpengineer.com/2426/wp_list_table-a-step-by-step-guide/
+ */
+class List_Table extends \WP_List_Table {
 	
 	protected $frosty_media;
 	protected $action;
 	var $data;
-		
+
+    /**
+     *
+     */
     function __construct() {
-		global $status, $page;
 		
-		$this->frosty_media	= $GLOBALS['frosty_media_notifications'];
-		$this->action			= sanitize_title_with_dashes( FM_DIRNAME . ' Notifications' );
+		$this->frosty_media	= FROSTYMEDIA()->notifications;
+		$this->action		= sanitize_title_with_dashes( FM_DIRNAME . ' Notifications' );
 		$this->data			= $this->frosty_media->get_notices();
 		
 		parent::__construct( array(
@@ -68,7 +77,7 @@ class FM_Notices_List_Table extends WP_List_Table {
 		}
 	}
 
-	function get_columns(){
+	function get_columns() {
 		$columns = array(
 			'notice_id'	=> __( 'ID', FM_DIRNAME ),
 			'posted'		=> __( 'Posted', FM_DIRNAME ),
