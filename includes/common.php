@@ -1,12 +1,15 @@
 <?php
 
-namespace FrostyMedia;
+namespace FrostyMedia\Includes;
 
 // Exit if accessed directly
-if ( !defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 /**
  * Class Common
+ *
  * @package     FrostyMedia
  * @subpackage  Classes/Common
  * @author      Austin Passy <http://austin.passy.co>
@@ -24,13 +27,17 @@ class Common {
      * @return string
      */
     public static function get_data_uri( $_image, $mime = '' ) {
-
         $image = trailingslashit( FM_PLUGIN_URL );
         $image .= $_image;
 
-        $data = base64_encode( file_get_contents( $image ) );
+        if ( ini_get( 'allow_url_fopen' ) ) {
+            $data = file_get_contents( $image );
+        } else {
+            $response = wp_remote_get( esc_url_raw( $image ) );
+            $data     = wp_remote_retrieve_body( $response );
+        }
 
-        return !empty( $data ) ? 'data:image/' . $mime . ';base64,' . $data : '';
+        return ! empty( $data ) ? 'data:image/' . $mime . ';base64,' . base64_encode( $data ) : '';
     }
 
     /**
@@ -58,7 +65,6 @@ class Common {
      * @return string
      */
     public static function get_option( $option, $section = FM_DIRNAME, $default = '' ) {
-
         $options = get_option( $section );
 
         if ( isset( $options[ $option ] ) ) {
@@ -67,5 +73,4 @@ class Common {
 
         return $default;
     }
-
 }

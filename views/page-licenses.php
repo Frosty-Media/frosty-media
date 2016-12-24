@@ -5,7 +5,6 @@
 
     <div class="postbox" style="margin-top:10px">
         <form autocomplete="off" action="" id="<?php printf( '%s-%s', FM_DIRNAME, sanitize_title( $this->title ) ); ?>" method="post">
-
             <?php $this->plugins_html(); ?>
         </form>
     </div>

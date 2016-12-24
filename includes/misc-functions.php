@@ -12,9 +12,9 @@ function frosty_media_screen_icon() {
  *
  * @return string
  */
-function get_frosty_media_screen_icon( $style = 'margin:10px 10px 0; width:32px;' ) {
+function get_frosty_media_screen_icon( $style = 'margin:-2px 10px 0; width:32px;' ) {
 	return sprintf( '<img src="%s" style="float:left; %s">',
-		FrostyMedia\Common::get_data_uri( 'svg/frosty-media.svg', 'svg+xml' ),
+		FrostyMedia\Includes\Common::get_data_uri( 'svg/frosty-media.svg', 'svg+xml' ),
 		$style
 	);
 }
@@ -28,8 +28,8 @@ function get_frosty_media_screen_icon( $style = 'margin:10px 10px 0; width:32px;
  *
  * Example: <?php $fm = FROSTYMEDIA(); ?>
  *
- * @return FrostyMedia\Core The one true Instance
+ * @return FrostyMedia\Includes\Core The one true Instance
  */
 function FROSTYMEDIA() {
-    return FrostyMedia\Core::instance();
+    return FrostyMedia\Includes\Core::instance();
 }

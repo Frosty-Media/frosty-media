@@ -1,0 +1,22 @@
+{
+  "name": "Frosty-Media/frosty-media",
+  "config": {
+    "bin-dir": "bin"
+  },
+  "require": {
+    "php": ">=5.5",
+    "composer/installers": "~1.2.0",
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^2.5",
+    "wp-coding-standards/wpcs": "^0.9.0",
+    "10up/wp_mock": "dev-master",
+  },
+  "autoload": {
+    "psr-4": {
+      "FrostyMedia\\": [
+        "/"
+      ]
+    }
+  }
+}
