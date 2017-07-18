@@ -33,7 +33,14 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.1.0~
+~Current Version:1.2.1~
+
+##### Version 1.2.1 *2017/06/18*
+* Don't show notices for user who can't `manage_options`
+
+##### Version 1.2.0 *2016/12/24*
+* File structure refactor.
+* Code formatting refactor.
 
 ##### Version 1.1.0 *10/10/15*
 * Code rewrite and cleanup.

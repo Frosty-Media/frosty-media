@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Frosty Media (License Manager)
  * Plugin URI: https://frosty.media/plugins/frosty-media/
- * Description: The core functionality that manages all //frosty.media licenses, settings, auto-updates and notifications.
- * Version: 1.2.0
+ * Description: The core functionality that manages all http://frosty.media licenses, settings, auto-updates and notifications.
+ * Version: 1.2.1
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  * Text Domain: frosty-media
@@ -21,7 +21,7 @@
  */
 
 // Exit if accessed directly
-if ( !defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 // Plugin Folder Path
 if ( ! defined( 'FM_PLUGIN_FILE' ) ) {
