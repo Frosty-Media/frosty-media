@@ -143,6 +143,10 @@ class Notifications {
      * Also renders a hidden nonce used for security when processing the AJAX request.
      */
     public function admin_notices() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+
         $notices = $this->get_notices(); // Remove 'true' to delete ALL.
         $trankey = Common::get_transient_key( FM_DIRNAME . '_notifications' );
 
