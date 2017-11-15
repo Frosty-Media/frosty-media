@@ -30,7 +30,7 @@ if ( ! defined( 'FM_PLUGIN_FILE' ) ) {
 }
 
 // Include the Core class.
-require_once __DIR__ . '/src/Core.php';
+require_once __DIR__ . '/src/core.php';
 
 // Out of the frying pan, and into the fire.
 add_action( 'plugins_loaded', array( 'FrostyMedia\Includes\Core', 'instance' ) );
