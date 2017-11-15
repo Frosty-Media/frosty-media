@@ -160,7 +160,7 @@ final class Core {
             new \WP_GitHub_Updater( $config );
 
             if ( ! function_exists( 'GHL_extra_headers' ) || ! function_exists( 'GHL_plugin_link' ) ) {
-                require_once( __DIR__ . '/libraries/github-link/github-link.php' );
+                require_once __DIR__ . '/libraries/github-link/github-link.php';
             }
         }
     }
