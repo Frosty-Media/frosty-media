@@ -32,14 +32,14 @@ class Notifications {
      * Notifications constructor.
      */
     public function __construct() {
-        $this->title   = __( 'Notifications', FM_DIRNAME );
-        $this->action  = sanitize_title_with_dashes( FM_DIRNAME . ' ' . $this->title );
+        $this->title = __( 'Notifications', FM_DIRNAME );
+        $this->action = sanitize_title_with_dashes( FM_DIRNAME . ' ' . $this->title );
         $this->api_url = add_query_arg( 'get_notifications', 'true', FM_API_URL );
 
-        add_action( 'admin_menu', array( $this, 'admin_menu' ), 19 );
-        add_action( 'admin_init', array( $this, 'admin_init' ) );
-        add_action( 'wp_ajax_' . $this->action, array( $this, 'ajax' ) );
-        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+        add_action( 'admin_menu', [ $this, 'admin_menu' ], 19 );
+        add_action( 'admin_init', [ $this, 'admin_init' ] );
+        add_action( 'wp_ajax_' . $this->action, [ $this, 'ajax' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
     }
 
     /**
@@ -52,7 +52,7 @@ class Notifications {
             sprintf( '%s', $this->title ),
             'manage_options',
             trailingslashit( FM_DIRNAME ) . strtolower( $this->title ),
-            array( $this, 'plugin_page' )
+            [ $this, 'plugin_page' ]
         );
     }
 
@@ -60,14 +60,14 @@ class Notifications {
      * Display the plugin settings options page
      */
     public function plugin_page() {
-        include( FM_PLUGIN_DIR . 'views/list-table.php' );
+        include FM_PLUGIN_DIR . 'views/list-table.php';
     }
 
     /**
      *
      */
     public function admin_init() {
-        add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+        add_action( 'admin_notices', [ $this, 'admin_notices' ] );
     }
 
     /**
@@ -76,22 +76,23 @@ class Notifications {
     public function enqueue_scripts() {
         wp_enqueue_style( $this->action, trailingslashit( FM_PLUGIN_URL ) . 'css/admin.css', false, FM_VERSION, 'screen' );
 
-        wp_register_script( $this->action, trailingslashit( FM_PLUGIN_URL ) . 'js/admin.js', array( 'jquery' ), FM_VERSION, false );
+        wp_register_script( $this->action, trailingslashit( FM_PLUGIN_URL ) . 'js/admin.js', [ 'jquery' ], FM_VERSION, false );
         wp_enqueue_script( $this->action );
 
-        $args = array(
-            'action'  => $this->action,
-            'handle'  => $this->action,
+        $args = [
+            'action' => $this->action,
+            'handle' => $this->action,
             'dirname' => FM_DIRNAME,
-            'nonce'   => wp_create_nonce( FM_PLUGIN_BASENAME . $this->action . '-nonce' ),
+            'nonce' => wp_create_nonce( FM_PLUGIN_BASENAME . $this->action . '-nonce' ),
             'loading' => admin_url( '/images/wpspin_light.gif' ),
-        );
+        ];
         wp_localize_script( $this->action, str_replace( '-', '_', $this->action ), $args );
     }
 
     /**
      * Helper function to get the notices array and return them.
-     * Look into updating $delete_all to maybe just wipe the latest KEY or just the latest KEY read/read_date. -
+     * Look into updating $delete_all to maybe just wipe the latest KEY or just the latest KEY
+     * read/read_date. -
      * 01/05/2015
      *
      * @param bool $delete_all
@@ -99,12 +100,12 @@ class Notifications {
      * @return array
      */
     public function get_notices( $delete_all = false ) {
-        $option  = get_option( FM_DIRNAME, array() );
-        $title   = strtolower( $this->title );
-        $notices = isset( $option[ $title ] ) ? $option[ $title ] : array();
+        $option = get_option( FM_DIRNAME, [] );
+        $title = strtolower( $this->title );
+        $notices = isset( $option[ $title ] ) ? $option[ $title ] : [];
 
         if ( $delete_all ) {
-            $option[ $title ] = array();
+            $option[ $title ] = [];
 
             delete_transient( common::get_transient_key( FM_DIRNAME . '_notifications' ) );
             update_option( FM_DIRNAME, $option );
@@ -117,16 +118,24 @@ class Notifications {
      * Helper function to update the notices.
      *
      * @since 1.0.0
+     *
+     * @param $new_notice
+     *
+     * @return array
      */
     public function maybe_update_notices( $new_notice ) {
-        $option   = get_option( FM_DIRNAME, array() );
-        $title    = strtolower( $this->title );
-        $_notices = isset( $option[ $title ] ) ? $option[ $title ] : array();
+        $option = get_option( FM_DIRNAME, [] );
+        $title = strtolower( $this->title );
+        $_notices = isset( $option[ $title ] ) ? $option[ $title ] : [];
+
+        if ( empty( $new_notice ) ) {
+            return $_notices;
+        }
 
         if ( isset( $_notices[ key( $_notices ) ] ) && $_notices[ key( $_notices ) ]->date < $new_notice[ key( $new_notices ) ]->date ) {
             array_unshift( $_notices, $new_notice[ key( $new_notice ) ] ); // Add the new notice to the beginning of the array.
-            $_notices[]       = $new_notice;
-            $_notices         = array_filter( $_notices, array( $this, 'is_not_null' ) );
+            $_notices[] = $new_notice;
+            $_notices = array_filter( $_notices, [ $this, 'is_not_null' ] );
             $option[ $title ] = $_notices;
             update_option( FM_DIRNAME, $option );    // Update the new notices
         } // First time install...
@@ -143,7 +152,7 @@ class Notifications {
      * Also renders a hidden nonce used for security when processing the AJAX request.
      */
     public function admin_notices() {
-        $notices = $this->get_notices(); // Remove 'true' to delete ALL.
+        $notices = $this->get_notices(); // Add `true` to delete ALL.
         $trankey = common::get_transient_key( FM_DIRNAME . '_notifications' );
 
         if ( empty( $notices ) || false === ( get_transient( $trankey ) ) ) {
@@ -208,10 +217,10 @@ class Notifications {
 
             $response = wp_remote_get(
                 esc_url_raw( $url ),
-                array(
-                    'timeout'   => 15,
+                [
+                    'timeout' => 15,
                     'sslverify' => false,
-                )
+                ]
             );
 
             if ( ! is_wp_error( $response ) ) {
@@ -241,7 +250,8 @@ class Notifications {
     }
 
     /**
-     * JavaScript callback used to hide the administration notice when the 'Dismiss' anchor is clicked on the front end.
+     * JavaScript callback used to hide the administration notice when the 'Dismiss' anchor is
+     * clicked on the front end.
      */
     public function ajax() {
         check_ajax_referer( FM_PLUGIN_BASENAME . $this->action . '-nonce', 'nonce' );
@@ -250,16 +260,16 @@ class Notifications {
             die( '0' );
         }
 
-        $option = get_option( FM_DIRNAME, array() );
-        $option = array_filter( $option, array( $this, 'is_not_null' ) );
-        $title  = strtolower( $this->title );
+        $option = get_option( FM_DIRNAME, [] );
+        $option = array_filter( $option, [ $this, 'is_not_null' ] );
+        $title = strtolower( $this->title );
         $key_id = absint( $_POST['notice_id'] );
 
         if ( ! isset( $option[ $title ][ $key_id ] ) ) {
             die( '0' );
         }
 
-        $option[ $title ][ $key_id ]->read      = true;
+        $option[ $title ][ $key_id ]->read = true;
         $option[ $title ][ $key_id ]->read_date = date_i18n( 'c', time() );
 
         if ( update_option( FM_DIRNAME, $option ) ) {
