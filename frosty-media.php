@@ -3,10 +3,11 @@
  * Plugin Name: Frosty Media (License Manager)
  * Plugin URI: https://frosty.media/plugins/frosty-media/
  * Description: The core functionality that manages all //frosty.media licenses, settings, auto-updates and notifications.
- * Version: 1.2.0
+ * Version: 1.3.0
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  * Text Domain: frosty-media
+ * Requires PHP: 5.5
  * GitHub Plugin URI: https://github.com/Frosty-Media/frosty-media
  * GitHub Branch: master
  *
@@ -29,7 +30,7 @@ if ( ! defined( 'FM_PLUGIN_FILE' ) ) {
 }
 
 // Include the Core class.
-require_once __DIR__ . '/Includes/Core.php';
+require_once __DIR__ . '/src/Core.php';
 
 // Out of the frying pan, and into the fire.
 add_action( 'plugins_loaded', array( 'FrostyMedia\Includes\Core', 'instance' ) );
