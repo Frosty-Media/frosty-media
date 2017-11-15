@@ -1,7 +1,7 @@
 <?php
 
 if ( ! class_exists( 'FrostyMedia\List_Table' ) ) {
-    require_once( trailingslashit( FM_PLUGIN_DIR ) . 'Includes/ListTable.php' );
+    require_once( trailingslashit( FM_PLUGIN_DIR ) . 'src/ListTable.php' );
 }
 
 if ( ! isset( $this->title ) ) {
