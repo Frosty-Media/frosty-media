@@ -1,7 +1,7 @@
 Frosty Media (License Manager)
 ============
 
-The core functionallity that manages all Frosty.Media licenses, settings, auto-updates and notifications. It's a required plugin for any purchases made on [Frosty Media](http://frosty.media).
+The core functionality that manages all Frosty.Media licenses, settings, auto-updates and notifications. It's a required plugin for any purchases made on [Frosty Media](http://frosty.media).
 
 ### Usage
 
@@ -33,7 +33,17 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.1.0~
+~Current Version:1.3.0~
+
+##### Version 1.3.0 *2017-11-15*
+* Fixes incompatibility with PHP 5.5. **Note:** Version 2 will require PHP 7.
+* Skips version 1.2 which had some misspelled directory changes.
+* Fixes activation of License Keys on License settings page.
+* Fix errors in update checks to wp.org of premium plugins.
+* All files formatted to new coding standards.
+* Moves classes out of `includes` directory and into `src`.
+* Update EDD SL Plugin Updater package to 1.6.8.
+* Update GitHub Link package to 0.4.4.
 
 ##### Version 1.1.0 *10/10/15*
 * Code rewrite and cleanup.
