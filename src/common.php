@@ -62,7 +62,7 @@ class Common {
      * @param string $section the section name this field belongs to
      * @param string $default default text if it's not found
      *
-     * @return string
+     * @return string|array
      */
     public static function get_option( $option, $section = FM_DIRNAME, $default = '' ) {
         $options = get_option( $section );
