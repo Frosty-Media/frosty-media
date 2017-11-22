@@ -37,6 +37,7 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ##### Version 1.3.2 *2017-11-22*
 * Fix possible undefined array key notice in WordPress 4.9
+* Update GitHub Link package to 0.4.5.
 
 ##### Version 1.3.0 *2017-11-15*
 * Fixes incompatibility with PHP 5.5. **Note:** Version 2 will require PHP 7.
