@@ -23,12 +23,12 @@ $minimum = isset( $minimum ) && $minimum;
             $atts = array( 'tabindex' => $args['key'] );
 
             if ( 'valid' === $status ) {
-                submit_button( $this->strings['deactivate-license'], 'button-primary', sprintf( '%s_deactivate', $plugin['id'] ), false, $atts );
+                submit_button( $this->get_strings()['deactivate-license'], 'button-primary', sprintf( '%s_deactivate', $plugin['id'] ), false, $atts );
                 echo '&nbsp;&nbsp;';
-                submit_button( $this->strings['check-license'], 'button-secondary', sprintf( '%s_check_license', $plugin['id'] ), false, $atts );
+                submit_button( $this->get_strings()['check-license'], 'button-secondary', sprintf( '%s_check_license', $plugin['id'] ), false, $atts );
             }
             else {
-                submit_button( $this->strings['activate-license'], 'button-primary', sprintf( '%s_activate', $plugin['id'] ), false, $atts );
+                submit_button( $this->get_strings()['activate-license'], 'button-primary', sprintf( '%s_activate', $plugin['id'] ), false, $atts );
             } ?>
         </div>
     <?php endif; ?>

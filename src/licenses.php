@@ -34,14 +34,6 @@ class Licenses {
     protected $handle;
 
     /**
-     * Variables
-     *
-     * @since 1.0.0
-     * @var array
-     */
-    protected $strings = [];
-
-    /**
      * Plugins array
      *
      * @var array $plugins
@@ -113,7 +105,6 @@ class Licenses {
      */
     public function load() {
         $this->load_updater();
-        $this->set_strings();
 
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
     }
@@ -145,10 +136,10 @@ class Licenses {
     }
 
     /**
-     * Set settings sections
+     * Get translation strings.
      */
-    private function set_strings() {
-        $this->strings = [
+    protected function get_strings() {
+        return [
             'plugin-license' => __( 'Plugin License', FM_DIRNAME ),
             'enter-key' => __( 'Enter your plugin license key.', FM_DIRNAME ),
             'license-key' => __( 'License Key', FM_DIRNAME ),
@@ -196,7 +187,7 @@ class Licenses {
 
                 // Checks license status to display under license key
                 if ( '' === $license ) {
-                    $message = $this->strings['enter-key'];
+                    $message = $this->get_strings()['enter-key'];
                 } else {
                     //delete_transient( $trankey );
                     if ( false === ( $message = get_transient( $trankey ) ) ) {
@@ -403,7 +394,7 @@ class Licenses {
      * @return string $message License status message.
      */
     private function check_license( $license = null, $plugin_args = [], $update_option = false ) {
-        $strings = $this->strings;
+        $strings = $this->get_strings();
 
         // Bail early if no license key
         if ( empty( $license ) ) {
