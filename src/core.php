@@ -20,7 +20,7 @@ final class Core {
     /**
      * @var string $version
      */
-    public $version = '1.3.0';
+    public $version = '1.3.3';
     /**
      * @var string $menu_page
      */
@@ -40,7 +40,7 @@ final class Core {
      * @return Core
      */
     public static function instance() {
-        if ( ! isset( self::$instance ) && ! ( self::$instance instanceof self ) ) {
+        if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Core ) ) {
             self::$instance = new self;
             self::$instance->setup_constants();
             self::$instance->includes();
@@ -100,69 +100,24 @@ final class Core {
      */
     private function includes() {
         // 3rd party libraries.
-        require_once( __DIR__ . '/libraries/github-updater/updater.php' );
+        require_once __DIR__ . '/libraries/github-updater/updater.php';
 
         // Frosty Media core.
-        require_once( __DIR__ . '/misc-functions.php' );
-        require_once( __DIR__ . '/check-folder-structure.php' );
-        require_once( __DIR__ . '/dashboard.php' );
-        require_once( __DIR__ . '/common.php' );
-        require_once( __DIR__ . '/notifications.php' );
-        require_once( __DIR__ . '/licenses.php' );
+        require_once __DIR__ . '/misc-functions.php';
+        require_once __DIR__ . '/check-folder-structure.php';
+        require_once __DIR__ . '/dashboard.php';
+        require_once __DIR__ . '/common.php';
+        require_once __DIR__ . '/notifications.php';
+        require_once __DIR__ . '/licenses.php';
     }
 
     /**
      * To infinity and beyond
      */
     private function actions() {
-        add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-        add_action( 'admin_init', array( $this, 'github_updater' ) );
-    }
-
-    private function instantiations() {
-        if ( is_admin() ) {
-            new Dashboard;
-        }
-
-        $this->notifications = new Notifications;
-        $this->licenses      = new Licenses;
-    }
-
-    /**
-     * Initiate the Github Updater.
-     */
-    public function github_updater() {
-        if ( is_admin() ) {
-            $config = array(
-                'slug'               => FM_PLUGIN_BASENAME,
-                // this is the slug of your plugin
-                'proper_folder_name' => FM_DIRNAME,
-                // this is the name of the folder your plugin lives in
-                'api_url'            => 'https://api.github.com/repos/Frosty-Media/frosty-media',
-                // the github API url of your github repo
-                'raw_url'            => 'https://raw.github.com/Frosty-Media/frosty-media/master',
-                // the github raw url of your github repo
-                'github_url'         => 'https://github.com/Frosty-Media/frosty-media',
-                // the github url of your github repo
-                'zip_url'            => 'https://github.com/Frosty-Media/frosty-media/zipball/master',
-                // the zip url of the github repo
-                'sslverify'          => true,
-                // wether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
-                'requires'           => '4.0',
-                // which version of WordPress does your plugin require?
-                'tested'             => '4.3',
-                // which version of WordPress is your plugin tested up to?
-                'readme'             => 'README.md',
-                // which file to use as the readme for the version number
-                'access_token'       => '',
-                // Access private repositories by authorizing under Appearance > Github Updates when this example plugin is installed
-            );
-            new \WP_GitHub_Updater( $config );
-
-            if ( ! function_exists( 'GHL_extra_headers' ) || ! function_exists( 'GHL_plugin_link' ) ) {
-                require_once __DIR__ . '/libraries/github-link/github-link.php';
-            }
-        }
+        add_action( 'admin_menu', [ $this, 'admin_menu' ] );
+        add_action( 'admin_init', [ $this, 'github_updater' ] );
+        add_action( 'admin_head-plugins.php', [ $this, 'github_link_css_fix' ] );
     }
 
     /**
@@ -174,19 +129,77 @@ final class Core {
             sprintf( 'Frosty Media%s', $this->update_html() ),
             'manage_options',
             FM_DIRNAME,
-            array( $this, 'plugin_page' ),
+            [ $this, 'plugin_page' ],
             common::get_data_uri( 'svg/frosty-media.svg', 'svg+xml' ),
             '80.0000001'
         );
 
-        add_action( 'admin_footer-' . $this->menu_page, array( $this, 'inline_jquery' ) );
+        add_action( 'admin_footer-' . $this->menu_page, [ $this, 'inline_jquery' ] );
+    }
+
+    /**
+     * Initiate the Github Updater.
+     */
+    public function github_updater() {
+        if ( is_admin() ) {
+            $config = [
+                'slug' => FM_PLUGIN_BASENAME,
+                // this is the slug of your plugin
+                'proper_folder_name' => FM_DIRNAME,
+                // this is the name of the folder your plugin lives in
+                'api_url' => 'https://api.github.com/repos/Frosty-Media/frosty-media',
+                // the github API url of your github repo
+                'raw_url' => 'https://raw.github.com/Frosty-Media/frosty-media/master',
+                // the github raw url of your github repo
+                'github_url' => 'https://github.com/Frosty-Media/frosty-media',
+                // the github url of your github repo
+                'zip_url' => 'https://github.com/Frosty-Media/frosty-media/zipball/master',
+                // the zip url of the github repo
+                'sslverify' => true,
+                // wether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
+                'requires' => '4.0',
+                // which version of WordPress does your plugin require?
+                'tested' => '4.3',
+                // which version of WordPress is your plugin tested up to?
+                'readme' => 'README.md',
+                // which file to use as the readme for the version number
+                'access_token' => '',
+                // Access private repositories by authorizing under Appearance > Github Updates when this example plugin is installed
+            ];
+            new \WP_GitHub_Updater( $config );
+
+            if ( ! function_exists( 'GHL_extra_headers' ) || ! function_exists( 'GHL_plugin_link' ) ) {
+                require_once __DIR__ . '/libraries/github-link/github-link.php';
+            }
+        }
+    }
+
+    /**
+     * Fixes the large icons found in WordPress > 4.9.
+     */
+    public function github_link_css_fix() {
+        global $wp_version;
+
+        if ( version_compare( $wp_version, '4.9', '>=' ) ) {
+            ?>
+            <style type="text/css">
+                .plugins .plugin-title .github-link.dashicons::before {
+                    background-color: transparent;
+                    box-shadow: none;
+                    font-size: 16px;
+                    color: inherit;
+                }
+            </style>
+            <?php
+        }
     }
 
     /**
      * Return the HTML if any plugin(s) has an update.
+     *
+     * @return string
      */
     public function update_html() {
-
         $has_update = $this->licenses->has_update();
 
         return ! empty( $has_update ) ?
@@ -202,7 +215,7 @@ final class Core {
         <div class="wrap">
 
         <?php frosty_media_screen_icon(); ?>
-        <h2><?php printf( 'Frosty Media %s %s', __( 'Dashboard', FM_DIRNAME ), '<small class="">v.' . FM_VERSION . '</small>' ); ?></h2>
+        <h2><?php printf( 'Frosty Media %s %s', __( 'Dashboard', FM_DIRNAME ), '<small>v.' . FM_VERSION . '</small>' ); ?></h2>
 
         <div id="dashboard-widgets-wrap">
 
@@ -240,5 +253,14 @@ final class Core {
         </script>";
 
         echo $js;
+    }
+
+    private function instantiations() {
+        if ( is_admin() ) {
+            new Dashboard;
+        }
+
+        $this->notifications = new Notifications;
+        $this->licenses = new Licenses;
     }
 }

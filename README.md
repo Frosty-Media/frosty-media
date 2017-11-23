@@ -33,7 +33,10 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.3.2~
+~Current Version:1.3.3~
+
+##### Version 1.3.3 *2017-11-23*
+* Update GitHub Link package to 0.4.6 to fix large dashicons in plugins page.
 
 ##### Version 1.3.2 *2017-11-22*
 * Fix possible undefined array key notice in WordPress 4.9

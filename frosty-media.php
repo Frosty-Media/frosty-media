@@ -3,7 +3,7 @@
  * Plugin Name: Frosty Media (License Manager)
  * Plugin URI: https://frosty.media/plugins/frosty-media/
  * Description: The core functionality that manages all //frosty.media licenses, settings, auto-updates and notifications.
- * Version: 1.3.2
+ * Version: 1.3.3
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  * Text Domain: frosty-media
