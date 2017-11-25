@@ -65,7 +65,7 @@ class Common {
      * @return string|array
      */
     public static function get_option( $option, $section = FM_DIRNAME, $default = '' ) {
-        $options = get_option( $section );
+        $options = get_option( $section, [] );
 
         if ( isset( $options[ $option ] ) ) {
             return $options[ $option ];
