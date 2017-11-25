@@ -1,3 +1,4 @@
+/** @global frosty_media_notifications */
 (function ($) {
   "use strict";
 
