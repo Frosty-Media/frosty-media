@@ -33,7 +33,10 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.3.3~
+~Current Version:1.3.4~
+
+##### Version 1.3.4 *2017-11-35*
+* Fix possible JS error when installing from GitHub master or version zip.
 
 ##### Version 1.3.3 *2017-11-23*
 * Update GitHub Link package to 0.4.6 to fix large dashicons in plugins page.
