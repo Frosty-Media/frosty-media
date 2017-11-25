@@ -18,6 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Licenses {
 
+    const OBJECT_NAME = 'frosty_media_licenses';
+
     /** @var string $title */
     protected $title;
 
@@ -230,7 +232,7 @@ class Licenses {
             'loading' => admin_url( '/images/wpspin_light.gif' ),
             'ajaxurl' => admin_url( '/admin-ajax.php' ),
         ];
-        wp_localize_script( $this->handle, str_replace( '-', '_', $this->handle ), $args );
+        wp_localize_script( $this->handle, self::OBJECT_NAME, $args );
     }
 
     /**
@@ -287,7 +289,7 @@ class Licenses {
     private function get_api_response( $api_params ) {
         // Call the custom API.
         $response = wp_remote_get(
-            add_query_arg( $api_params, $this->api_url ),
+            esc_url_raw( add_query_arg( $api_params, $this->api_url ) ),
             [ 'timeout' => 15, 'sslverify' => false ]
         );
 

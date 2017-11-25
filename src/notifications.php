@@ -18,6 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Notifications {
 
+    const OBJECT_NAME = 'frosty_media_notifications';
+
     /**
      * Variables
      *
@@ -86,7 +88,7 @@ class Notifications {
             'nonce' => wp_create_nonce( FM_PLUGIN_BASENAME . $this->action . '-nonce' ),
             'loading' => admin_url( '/images/wpspin_light.gif' ),
         ];
-        wp_localize_script( $this->action, str_replace( '-', '_', $this->action ), $args );
+        wp_localize_script( $this->action, self::OBJECT_NAME, $args );
     }
 
     /**
