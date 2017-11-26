@@ -26,6 +26,7 @@ load_plugin_textdomain( 'github-link', false, dirname( __FILE__ ) . '/languages'
 add_filter( "extra_plugin_headers", "GHL_extra_headers" );
 add_filter( "plugin_action_links", "GHL_plugin_link", 10, 4 );
 add_filter( "network_admin_plugin_action_links", "GHL_plugin_link", 10, 4 );
+add_action( "admin_head-plugins.php", "GHL_wp49_css_fix" );
 
 function GHL_extra_headers( $extra_headers ) {
 
@@ -154,4 +155,21 @@ function GHL_plugin_link( $actions, $plugin_file, $plugin_data, $context ) {
     }
 
     return $actions;
+}
+
+function GHL_wp49_css_fix() {
+    global $wp_version;
+
+    if ( version_compare( $wp_version, '4.9', '>=' ) ) {
+        ?>
+        <style type="text/css">
+            .plugins .plugin-title .github-link.dashicons::before {
+                background-color: transparent;
+                box-shadow: none;
+                font-size: 16px;
+                color: inherit;
+            }
+        </style>
+        <?php
+    }
 }
