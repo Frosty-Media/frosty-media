@@ -33,7 +33,10 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.3.4~
+~Current Version:1.3.5~
+
+##### Version 1.3.5 *2017-11-35*
+* Remove overide code in Core for GitHub Link version 0.4.6.
 
 ##### Version 1.3.4 *2017-11-35*
 * Fix possible JS error when installing from GitHub master or version zip.
