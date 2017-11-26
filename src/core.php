@@ -20,7 +20,7 @@ final class Core {
     /**
      * @var string $version
      */
-    public $version = '1.3.4';
+    public $version = '1.3.5';
     /**
      * @var string $menu_page
      */
@@ -117,7 +117,6 @@ final class Core {
     private function actions() {
         add_action( 'admin_menu', [ $this, 'admin_menu' ] );
         add_action( 'admin_init', [ $this, 'github_updater' ] );
-        add_action( 'admin_head-plugins.php', [ $this, 'github_link_css_fix' ] );
     }
 
     /**
@@ -171,26 +170,6 @@ final class Core {
             if ( ! function_exists( 'GHL_extra_headers' ) || ! function_exists( 'GHL_plugin_link' ) ) {
                 require_once __DIR__ . '/libraries/github-link/github-link.php';
             }
-        }
-    }
-
-    /**
-     * Fixes the large icons found in WordPress > 4.9.
-     */
-    public function github_link_css_fix() {
-        global $wp_version;
-
-        if ( version_compare( $wp_version, '4.9', '>=' ) ) {
-            ?>
-            <style type="text/css">
-                .plugins .plugin-title .github-link.dashicons::before {
-                    background-color: transparent;
-                    box-shadow: none;
-                    font-size: 16px;
-                    color: inherit;
-                }
-            </style>
-            <?php
         }
     }
 
