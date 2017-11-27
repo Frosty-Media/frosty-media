@@ -20,7 +20,7 @@ final class Core {
     /**
      * @var string $version
      */
-    public $version = '1.3.5';
+    public $version = '1.4.0';
     /**
      * @var string $menu_page
      */
@@ -44,8 +44,8 @@ final class Core {
             self::$instance = new self;
             self::$instance->setup_constants();
             self::$instance->includes();
-            self::$instance->actions();
             self::$instance->instantiations();
+            self::$instance->actions();
         }
 
         return self::$instance;
@@ -111,6 +111,15 @@ final class Core {
         require_once __DIR__ . '/licenses.php';
     }
 
+    private function instantiations() {
+        if ( is_admin() ) {
+            new Dashboard;
+        }
+
+        $this->notifications = new Notifications;
+        $this->licenses = new Licenses;
+    }
+
     /**
      * To infinity and beyond
      */
@@ -158,12 +167,17 @@ final class Core {
                 // wether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
                 'requires' => '4.0',
                 // which version of WordPress does your plugin require?
-                'tested' => '4.3',
+                'tested' => '4.9',
                 // which version of WordPress is your plugin tested up to?
                 'readme' => 'README.md',
                 // which file to use as the readme for the version number
-                'access_token' => '',
-                // Access private repositories by authorizing under Appearance > Github Updates when this example plugin is installed
+                'icons' => [
+                    'svg' => trailingslashit( FM_PLUGIN_URL ) . 'svg/frosty-media.svg',
+                    '1x_png' => trailingslashit( FM_PLUGIN_URL ) . 'icons/icon-128x128.png',
+					'1x_jpg' => trailingslashit( FM_PLUGIN_URL ) . 'icons/icon-128x128.jpg',
+					'2x_png' => trailingslashit( FM_PLUGIN_URL ) . 'icons/icon-256x256.png',
+					'2x_jpg' => trailingslashit( FM_PLUGIN_URL ) . 'icons/icon-256x256.jpg',
+                ],
             ];
             new \WP_GitHub_Updater( $config );
 
@@ -232,14 +246,5 @@ final class Core {
         </script>";
 
         echo $js;
-    }
-
-    private function instantiations() {
-        if ( is_admin() ) {
-            new Dashboard;
-        }
-
-        $this->notifications = new Notifications;
-        $this->licenses = new Licenses;
     }
 }

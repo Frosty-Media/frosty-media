@@ -33,7 +33,13 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.3.5~
+~Current Version:1.4.0~
+
+##### Version 1.3.5 *2017-11-35*
+* Updated `WP_GitHub_Updater` which has not seen an update in over three years. It's now out of sync.
+* Implemented new icons for WordPress > 4.9's upgrade screen.
+* Added new PNG and JPG icons.
+* Added this License Manager plugin to the update html notice. Meaning an update bubble will show if it has an update.
 
 ##### Version 1.3.5 *2017-11-35*
 * Remove overide code in Core for GitHub Link version 0.4.6.
