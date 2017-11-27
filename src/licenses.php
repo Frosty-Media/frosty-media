@@ -557,12 +557,15 @@ class Licenses {
      * @return array|bool
      */
     public function has_update() {
-//        if ( defined( 'WP_LOCAL_DEV' ) && WP_LOCAL_DEV ) {
-//            set_site_transient( 'update_plugins', null );
-//        }
+        $this->clear_update_plugins_transient();
 
         $update = [];
         $plugins = get_site_transient( 'update_plugins' );
+
+        // Add the License Manager update notice to the scope.
+        if ( ! empty( $plugins->response[ FM_PLUGIN_BASENAME ] ) ) {
+            $update[ FM_PLUGIN_BASENAME ] = true;
+        }
 
         foreach ( $this->plugins as $plugin ) {
             if ( ! isset( $plugin['basename'] ) ) {
@@ -585,5 +588,12 @@ class Licenses {
         }
 
         return false;
+    }
+
+    private function clear_update_plugins_transient() {
+        if ( defined( 'WP_LOCAL_DEV' ) && WP_LOCAL_DEV &&
+             isset( $_GET['clear_site_transient_update_plugins'] ) ) {
+            set_site_transient( 'update_plugins', null );
+        }
     }
 }
