@@ -14,22 +14,28 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Core {
 
+    const VERSION = '1.5.0';
+
     /** Singleton *************************************************************/
     private static $instance;
 
     /**
-     * @var string $version
-     */
-    public $version = '1.4.0';
-    /**
+     * Top-menu page id slug.
+     *
      * @var string $menu_page
      */
     public $menu_page;
+
     /**
+     * Notifications object.
+     *
      * @var Notifications $notifications
      */
     public $notifications;
+
     /**
+     * Licenses object.
+     *
      * @var Licenses $licenses
      */
     public $licenses;
@@ -56,7 +62,6 @@ final class Core {
      *
      * @access private
      * @since 1.4
-     * @return void
      */
     private function setup_constants() {
         // API URL
@@ -66,7 +71,7 @@ final class Core {
 
         // Plugin version
         if ( ! defined( 'FM_VERSION' ) ) {
-            define( 'FM_VERSION', $this->version );
+            define( 'FM_VERSION', self::VERSION );
         }
 
         // Plugin Folder URL
@@ -107,10 +112,14 @@ final class Core {
         require_once __DIR__ . '/check-folder-structure.php';
         require_once __DIR__ . '/dashboard.php';
         require_once __DIR__ . '/common.php';
+        require_once __DIR__ . '/license-manager.php';
         require_once __DIR__ . '/notifications.php';
         require_once __DIR__ . '/licenses.php';
     }
 
+    /**
+     * Instantiate class objects.
+     */
     private function instantiations() {
         if ( is_admin() ) {
             new Dashboard;
@@ -138,7 +147,7 @@ final class Core {
             'manage_options',
             FM_DIRNAME,
             [ $this, 'plugin_page' ],
-            common::get_data_uri( 'svg/frosty-media.svg', 'svg+xml' ),
+            Common::get_data_uri( 'svg/frosty-media.svg', 'svg+xml' ),
             '80.0000001'
         );
 
@@ -164,7 +173,11 @@ final class Core {
                 'zip_url' => 'https://github.com/Frosty-Media/frosty-media/zipball/master',
                 // the zip url of the github repo
                 'sslverify' => true,
-                // wether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
+                /*
+                 * whether WP should check the validity of the SSL cert when getting an update,
+                 * see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and
+                 * https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
+                 */
                 'requires' => '4.0',
                 // which version of WordPress does your plugin require?
                 'tested' => '4.9',
@@ -196,7 +209,9 @@ final class Core {
         $has_update = $this->licenses->has_update();
 
         return ! empty( $has_update ) ?
-            '&nbsp;<span id="fm-update" title="' . esc_attr__( 'Update Available', FM_DIRNAME ) . '" class="update-plugins count-' . absint( $has_update['count'] ) . '"><span class="plugin-count">' . absint( $has_update['count'] ) . '</span></span>' :
+            '&nbsp;<span id="fm-update" title="' . esc_attr__( 'Update Available', FM_DIRNAME ) .
+            '" class="update-plugins count-' . absint( $has_update['count'] ) .
+            '"><span class="plugin-count">' . absint( $has_update['count'] ) . '</span></span>' :
             '';
     }
 
