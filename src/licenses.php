@@ -16,24 +16,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @copyright Copyright (c) 2015 - 2017, Austin Passy
  * @license http://opensource.org/licenses/gpl-2.0.php GNU Public License
  */
-class Licenses {
+class Licenses extends LicenseManager {
 
     const OBJECT_NAME = 'frosty_media_licenses';
 
-    /** @var string $title */
-    protected $title;
-
-    /** @var string $action */
-    protected $action;
-
-    /** @var string $api_url */
-    protected $api_url;
-
     /** @var string $submenu_page */
     protected $submenu_page;
-
-    /** @var string $handle */
-    protected $handle;
 
     /**
      * Plugins array
@@ -49,11 +37,12 @@ class Licenses {
         $this->title = __( 'Licenses', FM_DIRNAME );
         $this->action = sanitize_title_with_dashes( FM_DIRNAME . ' ' . $this->title );
         $this->api_url = trailingslashit( FM_API_URL ) . 'edd-sl-api/'; // @see	https://github.com/Frosty-Media/edd-sl-api-endpoint
-        $this->handle = $this->action;
 
-        /* Register all plugins */
         $this->add_plugins();
+        parent::__construct();
+    }
 
+    public function add_hooks() {
         add_action( 'admin_menu', [ $this, 'admin_menu' ], 19 );
         add_action( 'wp_ajax_' . $this->action, [ $this, 'license_action_ajax' ] );
 
@@ -65,7 +54,7 @@ class Licenses {
      *
      * @param array $plugins plugin sections array
      */
-    private function add_plugins( $plugins = [] ) {
+    private function add_plugins( array $plugins = [] ) {
         $plugins = apply_filters( 'frosty_media_add_plugin_license', $plugins );
         $this->plugins = $plugins;
     }
@@ -120,7 +109,7 @@ class Licenses {
         }
 
         foreach ( $this->plugins as $plugin ) {
-            $option = common::get_option( $plugin['id'], FM_DIRNAME, [] );
+            $option = Common::get_option( $plugin['id'], FM_DIRNAME, [] );
             $license = isset( $option['license'] ) ? $option['license'] : '';
             new \EDD_SL_Plugin_Updater( $this->api_url, $plugin['file'],
                 [
@@ -182,10 +171,10 @@ class Licenses {
         } else {
             foreach ( $this->plugins as $key => $plugin ) {
 
-                $option = common::get_option( $plugin['id'], FM_DIRNAME, [] );
+                $option = Common::get_option( $plugin['id'], FM_DIRNAME, [] );
                 $license = isset( $option['license'] ) ? $option['license'] : '';
                 $status = isset( $option['status'] ) ? $option['status'] : '';
-                $trankey = common::get_transient_key( $plugin['id'] . '_license_message' );
+                $trankey = Common::get_transient_key( $plugin['id'] . '_license_message' );
 
                 // Checks license status to display under license key
                 if ( '' === $license ) {
@@ -221,9 +210,9 @@ class Licenses {
     /**
      * Enqueue License only script
      */
-    function enqueue_scripts() {
-        wp_register_script( $this->handle, trailingslashit( FM_PLUGIN_URL ) . 'js/licenses.js', [ 'jquery' ], FM_VERSION, false );
-        wp_enqueue_script( $this->handle );
+    public function enqueue_scripts() {
+        wp_register_script( $this->action, trailingslashit( FM_PLUGIN_URL ) . 'js/licenses.js', [ 'jquery' ], FM_VERSION, false );
+        wp_enqueue_script( $this->action );
 
         $args = [
             'action' => $this->action,
@@ -232,7 +221,7 @@ class Licenses {
             'loading' => admin_url( '/images/wpspin_light.gif' ),
             'ajaxurl' => admin_url( '/admin-ajax.php' ),
         ];
-        wp_localize_script( $this->handle, self::OBJECT_NAME, $args );
+        wp_localize_script( $this->action, static::OBJECT_NAME, $args );
     }
 
     /**
@@ -331,7 +320,7 @@ class Licenses {
         if ( $license_data && isset( $license_data->license ) ) {
 
             if ( $license_data->license !== 'invalid' ) {
-                $trankey = common::get_transient_key( $plugin_id . '_license_message' );
+                $trankey = Common::get_transient_key( $plugin_id . '_license_message' );
                 $option = get_option( FM_DIRNAME, [] );
                 $option[ $plugin_id ]['license'] = trim( $license );
                 $option[ $plugin_id ]['status'] = trim( $license_data->license );
@@ -371,7 +360,7 @@ class Licenses {
 
         // $license_data->license will be either "deactivated" or "failed"
         if ( $license_data && isset( $license_data->license ) && $license_data->license === 'deactivated' ) {
-            $trankey = common::get_transient_key( $plugin_id . '_license_message' );
+            $trankey = Common::get_transient_key( $plugin_id . '_license_message' );
             $option = get_option( FM_DIRNAME, [] );
             $option[ $plugin_id ]['license'] = trim( $license );
             $option[ $plugin_id ]['status'] = '';
@@ -468,7 +457,7 @@ class Licenses {
             $option[ $plugin_args['id'] ]['status'] : '';
 
         $option[ $plugin_args['id'] ]['status'] = trim( $license_data->license );
-        $trankey = common::get_transient_key( $plugin_args['id'] . '_license_message' );
+        $trankey = Common::get_transient_key( $plugin_args['id'] . '_license_message' );
 
         if ( $update_option ) {
             if ( ! empty( $status ) && $status != $option[ $plugin_args['id'] ]['status'] ) {
