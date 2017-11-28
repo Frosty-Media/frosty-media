@@ -16,19 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @copyright   Copyright (c) 2015, Austin Passy
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  */
-class Notifications {
+class Notifications extends LicenseManager {
 
     const OBJECT_NAME = 'frosty_media_notifications';
-
-    /**
-     * Variables
-     *
-     * @since 1.0.0
-     * @type string
-     */
-    protected $title;
-    protected $action;
-    protected $api_url;
 
     /**
      * Notifications constructor.
@@ -37,7 +27,10 @@ class Notifications {
         $this->title = __( 'Notifications', FM_DIRNAME );
         $this->action = sanitize_title_with_dashes( FM_DIRNAME . ' ' . $this->title );
         $this->api_url = add_query_arg( 'get_notifications', 'true', FM_API_URL );
+        parent::__construct();
+    }
 
+    public function add_hooks() {
         add_action( 'admin_menu', [ $this, 'admin_menu' ], 19 );
         add_action( 'admin_init', [ $this, 'admin_init' ] );
         add_action( 'wp_ajax_' . $this->action, [ $this, 'ajax' ] );
@@ -88,7 +81,7 @@ class Notifications {
             'nonce' => wp_create_nonce( FM_PLUGIN_BASENAME . $this->action . '-nonce' ),
             'loading' => admin_url( '/images/wpspin_light.gif' ),
         ];
-        wp_localize_script( $this->action, self::OBJECT_NAME, $args );
+        wp_localize_script( $this->action, static::OBJECT_NAME, $args );
     }
 
     /**
@@ -109,7 +102,7 @@ class Notifications {
         if ( $delete_all ) {
             $option[ $title ] = [];
 
-            delete_transient( common::get_transient_key( FM_DIRNAME . '_notifications' ) );
+            delete_transient( Common::get_transient_key( FM_DIRNAME . '_notifications' ) );
             update_option( FM_DIRNAME, $option );
         }
 
@@ -140,8 +133,8 @@ class Notifications {
             $_notices = array_filter( $_notices, [ $this, 'is_not_null' ] );
             $option[ $title ] = $_notices;
             update_option( FM_DIRNAME, $option );    // Update the new notices
-        } // First time install...
-        elseif ( empty( $_notices ) ) {
+            // First time install...
+        } elseif ( empty( $_notices ) ) {
             $option[ $title ] = $new_notice;
             update_option( FM_DIRNAME, $option );    // Update the new notices
         }
@@ -155,7 +148,7 @@ class Notifications {
      */
     public function admin_notices() {
         $notices = $this->get_notices(); // Add `true` to delete ALL.
-        $trankey = common::get_transient_key( FM_DIRNAME . '_notifications' );
+        $trankey = Common::get_transient_key( FM_DIRNAME . '_notifications' );
 
         if ( empty( $notices ) || false === ( get_transient( $trankey ) ) ) {
             $notices = $this->wp_remote_get( $this->api_url, $trankey );
