@@ -33,7 +33,19 @@ add_filter( 'frosty_media_add_plugin_license', 'frosty_media_register_licensed_p
 
 ### Changelog
 
-~Current Version:1.4.0~
+~Current Version:1.5.0~
+
+@todo:
+* Cleanup Notifications class.
+* Add a button to get all notifications (current and past).
+* Force get new notifications.
+
+##### Version 1.5.0 *2017-11-28*
+* Implement common abstract (base) class for the Licenses & Notifications classes.
+* Add an interface for the classes which use hooks.
+* Fix lowercase class implementation of `Common` which could cause issues in core.php.
+* Code cleanup: dashboard.php, list-table.php.
+* Only enqueue admin scripts and styles on their respected pages.
 
 ##### Version 1.4.0 *2017-11-27*
 * Updated `WP_GitHub_Updater` which has not seen an update in over three years. It's now out of sync.
