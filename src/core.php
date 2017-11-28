@@ -20,6 +20,13 @@ final class Core {
     private static $instance;
 
     /**
+     * Licenses object.
+     *
+     * @var Licenses $licenses
+     */
+    public $licenses;
+
+    /**
      * Top-menu page id slug.
      *
      * @var string $menu_page
@@ -32,13 +39,6 @@ final class Core {
      * @var Notifications $notifications
      */
     public $notifications;
-
-    /**
-     * Licenses object.
-     *
-     * @var Licenses $licenses
-     */
-    public $licenses;
 
     /**
      * Main instance.
