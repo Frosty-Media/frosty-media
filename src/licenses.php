@@ -20,9 +20,6 @@ class Licenses extends LicenseManager {
 
     const OBJECT_NAME = 'frosty_media_licenses';
 
-    /** @var string $submenu_page */
-    protected $submenu_page;
-
     /**
      * Plugins array
      *
@@ -64,7 +61,7 @@ class Licenses extends LicenseManager {
      *
      * @param array $plugin
      */
-    public function add_plugin( $plugin ) {
+    public function add_plugin( array $plugin ) {
         $this->plugins[] = $plugin;
     }
 
@@ -81,7 +78,7 @@ class Licenses extends LicenseManager {
             [ $this, 'plugin_page' ]
         );
 
-        add_action( 'load-' . $this->submenu_page, [ $this, 'load' ], 1 );
+        add_action( 'admin_init', [ $this, 'load' ], 99 );
     }
 
     /**
@@ -98,62 +95,6 @@ class Licenses extends LicenseManager {
         $this->load_updater();
 
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-    }
-
-    /**
-     * Load the plugin Updater and activate the updater for each plugin registered.
-     */
-    private function load_updater() {
-        if ( ! class_exists( 'EDD_SL_Plugin_Updater' ) ) {
-            include __DIR__ . '/libraries/edd/EDD_SL_Plugin_Updater.php';
-        }
-
-        foreach ( $this->plugins as $plugin ) {
-            $option = Common::get_option( $plugin['id'], FM_DIRNAME, [] );
-            $license = isset( $option['license'] ) ? $option['license'] : '';
-            new \EDD_SL_Plugin_Updater( $this->api_url, $plugin['file'],
-                [
-                    'version' => $plugin['version'],
-                    // current version number
-                    'license' => $license,
-                    // license key
-                    'item_name' => $plugin['title'],
-                    // name of this plugin in the Easy Digital Downloads system
-                    'author' => $plugin['author'],
-                    // author of this plugin
-                ]
-            );
-        }
-    }
-
-    /**
-     * Get translation strings.
-     */
-    protected function get_strings() {
-        return [
-            'plugin-license' => __( 'Plugin License', FM_DIRNAME ),
-            'enter-key' => __( 'Enter your plugin license key.', FM_DIRNAME ),
-            'license-key' => __( 'License Key', FM_DIRNAME ),
-            'license-action' => __( 'License Action', FM_DIRNAME ),
-            'deactivate-license' => __( 'Deactivate License', FM_DIRNAME ),
-            'activate-license' => __( 'Activate License', FM_DIRNAME ),
-            'check-license' => __( 'Check License Status', FM_DIRNAME ),
-            'status-unknown' => __( 'License status is unknown.', FM_DIRNAME ),
-            'renew' => __( 'Renew?', FM_DIRNAME ),
-            'unlimited' => __( 'unlimited', FM_DIRNAME ),
-            'license-key-is-active' => __( 'License key is active.', FM_DIRNAME ),
-            'expires%s' => __( 'Expires %s.', FM_DIRNAME ),
-            '%1$s/%2$-sites' => __( 'You have %1$s / %2$s sites activated.', FM_DIRNAME ),
-            'license-key-expired-%s' => __( 'License key expired %s.', FM_DIRNAME ),
-            'license-key-expired' => __( 'License key has expired.', FM_DIRNAME ),
-            'license-keys-do-not-match' => __( 'License keys do not match.', FM_DIRNAME ),
-            'license-is-inactive' => __( 'License is inactive.', FM_DIRNAME ),
-            'license-key-is-disabled' => __( 'License key is disabled.', FM_DIRNAME ),
-            'site-is-inactive' => __( 'Site is inactive.', FM_DIRNAME ),
-            'license-status-unknown' => __( 'License status is unknown.', FM_DIRNAME ),
-            'update-notice' => __( "Updating this plugin will lose any customizations you have made. 'Cancel' to stop, 'OK' to update.", FM_DIRNAME ),
-            'update-available' => __( '<strong>%1$s %2$s</strong> is available. <a href="%3$s" class="thickbox" title="%4s">Check out what\'s new</a> or <a href="%5$s"%6$s>update now</a>.', FM_DIRNAME ),
-        ];
     }
 
     /**
@@ -201,16 +142,15 @@ class Licenses extends LicenseManager {
     }
 
     /**
-     * Output the singular plugin HTML
+     * Enqueue License only scripts.
+     *
+     * @param string $hook
      */
-    private function license_html( $plugin, $args = [], $minimum = false ) {
-        include FM_PLUGIN_DIR . 'views/license.php';
-    }
+    public function enqueue_scripts( $hook ) {
+        if ( ! in_array( $hook, [ $this->submenu_page ] ) ) {
+            return;
+        }
 
-    /**
-     * Enqueue License only script
-     */
-    public function enqueue_scripts() {
         wp_register_script( $this->action, trailingslashit( FM_PLUGIN_URL ) . 'js/licenses.js', [ 'jquery' ], FM_VERSION, false );
         wp_enqueue_script( $this->action );
 
@@ -221,7 +161,7 @@ class Licenses extends LicenseManager {
             'loading' => admin_url( '/images/wpspin_light.gif' ),
             'ajaxurl' => admin_url( '/admin-ajax.php' ),
         ];
-        wp_localize_script( $this->action, static::OBJECT_NAME, $args );
+        wp_localize_script( $this->action, self::OBJECT_NAME, $args );
     }
 
     /**
@@ -264,6 +204,123 @@ class Licenses extends LicenseManager {
         }
 
         wp_send_json_error();
+    }
+
+    /**
+     * Disable requests to wp.org repository for this plugin.
+     *
+     * @since 1.0.0
+     *
+     * @param $r
+     * @param $url
+     *
+     * @return mixed
+     */
+    public function hide_plugin_from_wp_repo( $r, $url ) {
+        $update_check = (bool) strpos( $url, '//api.wordpress.org/plugins/update-check/1.1/' );
+
+        // If it's not a plugin update request, bail.
+        if ( false === $update_check ) {
+            return $r;
+        }
+
+        // Decode the JSON response
+        $plugins = json_decode( $r['body']['plugins'] );
+
+        // Loop through each plugin and remove the active plugin from the check
+        foreach ( $this->plugins as $plugin ) {
+            if ( ! isset( $plugin['basename'] ) ) {
+                continue;
+            }
+
+            unset( $plugins->{$plugin['basename']} );
+            // Make sure it's an array, since a cached $r['body']['plugins'] might still be an Object...
+            if ( ! is_array( $plugins->active ) ) {
+                continue;
+            }
+            unset( $plugins->active[ array_search( $plugin['basename'], $plugins->active ) ] );
+        }
+
+        // Encode the updated JSON response
+        $r['body']['plugins'] = json_encode( $plugins );
+
+        return $r;
+    }
+
+    /**
+     * Plugin has update.
+     *
+     * @return array|bool
+     */
+    public function has_update() {
+        $this->clear_update_plugins_transient();
+
+        $update = [];
+        $plugins = get_site_transient( 'update_plugins' );
+
+        // Add the License Manager update notice to the scope.
+        if ( ! empty( $plugins->response[ FM_PLUGIN_BASENAME ] ) ) {
+            $update[ FM_PLUGIN_BASENAME ] = true;
+        }
+
+        foreach ( $this->plugins as $plugin ) {
+            if ( ! isset( $plugin['basename'] ) ) {
+                continue;
+            }
+            if ( ! isset( $plugin['version'] ) ) {
+                continue;
+            }
+            if ( ! isset( $plugins->response[ $plugin['basename'] ]->slug ) ||
+                 ! in_array( basename( $plugin['basename'], '.php' ), (array) $plugins->response[ $plugin['basename'] ]->slug ) ) {
+                continue;
+            }
+            $update[ $plugin['title'] ] = version_compare( $plugin['version'], $plugins->response[ $plugin['basename'] ]->new_version, '<' );
+        }
+
+        if ( ! empty( $update ) ) {
+            $update['count'] = count( $update );
+
+            return $update;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get translation strings.
+     */
+    protected function get_strings() {
+        return [
+            'plugin-license' => __( 'Plugin License', FM_DIRNAME ),
+            'enter-key' => __( 'Enter your plugin license key.', FM_DIRNAME ),
+            'license-key' => __( 'License Key', FM_DIRNAME ),
+            'license-action' => __( 'License Action', FM_DIRNAME ),
+            'deactivate-license' => __( 'Deactivate License', FM_DIRNAME ),
+            'activate-license' => __( 'Activate License', FM_DIRNAME ),
+            'check-license' => __( 'Check License Status', FM_DIRNAME ),
+            'status-unknown' => __( 'License status is unknown.', FM_DIRNAME ),
+            'renew' => __( 'Renew?', FM_DIRNAME ),
+            'unlimited' => __( 'unlimited', FM_DIRNAME ),
+            'license-key-is-active' => __( 'License key is active.', FM_DIRNAME ),
+            'expires%s' => __( 'Expires %s.', FM_DIRNAME ),
+            '%1$s/%2$-sites' => __( 'You have %1$s / %2$s sites activated.', FM_DIRNAME ),
+            'license-key-expired-%s' => __( 'License key expired %s.', FM_DIRNAME ),
+            'license-key-expired' => __( 'License key has expired.', FM_DIRNAME ),
+            'license-keys-do-not-match' => __( 'License keys do not match.', FM_DIRNAME ),
+            'license-is-inactive' => __( 'License is inactive.', FM_DIRNAME ),
+            'license-key-is-disabled' => __( 'License key is disabled.', FM_DIRNAME ),
+            'site-is-inactive' => __( 'Site is inactive.', FM_DIRNAME ),
+            'license-status-unknown' => __( 'License status is unknown.', FM_DIRNAME ),
+            'update-notice' => __( "Updating this plugin will lose any customizations you have made. 'Cancel' to stop, 'OK' to update.", FM_DIRNAME ),
+            'update-available' => __( '<strong>%1$s %2$s</strong> is available. <a href="%3$s" class="thickbox" title="%4s">Check out what\'s new</a> or <a href="%5$s"%6$s>update now</a>.', FM_DIRNAME ),
+        ];
+    }
+
+    /**
+     * Output the singular plugin HTML
+     */
+    private function license_html( $plugin, $args = [], $minimum = false ) {
+        include FM_PLUGIN_DIR . 'views/license.php';
     }
 
     /**
@@ -500,83 +557,29 @@ class Licenses extends LicenseManager {
     }
 
     /**
-     * Disable requests to wp.org repository for this plugin.
-     *
-     * @since 1.0.0
-     *
-     * @param $r
-     * @param $url
-     *
-     * @return mixed
+     * Load the plugin Updater and activate the updater for each plugin registered.
      */
-    public function hide_plugin_from_wp_repo( $r, $url ) {
-        $update_check = (bool) strpos( $url, '//api.wordpress.org/plugins/update-check/1.1/' );
-
-        // If it's not a plugin update request, bail.
-        if ( false === $update_check ) {
-            return $r;
-        }
-
-        // Decode the JSON response
-        $plugins = json_decode( $r['body']['plugins'] );
-
-        // Loop through each plugin and remove the active plugin from the check
-        foreach ( $this->plugins as $plugin ) {
-            if ( ! isset( $plugin['basename'] ) ) {
-                continue;
-            }
-
-            unset( $plugins->{$plugin['basename']} );
-            // Make sure it's an array, since a cached $r['body']['plugins'] might still be an Object...
-            if ( ! is_array( $plugins->active ) ) {
-                continue;
-            }
-            unset( $plugins->active[ array_search( $plugin['basename'], $plugins->active ) ] );
-        }
-
-        // Encode the updated JSON response
-        $r['body']['plugins'] = json_encode( $plugins );
-
-        return $r;
-    }
-
-    /**
-     * Plugin has update.
-     *
-     * @return array|bool
-     */
-    public function has_update() {
-        $this->clear_update_plugins_transient();
-
-        $update = [];
-        $plugins = get_site_transient( 'update_plugins' );
-
-        // Add the License Manager update notice to the scope.
-        if ( ! empty( $plugins->response[ FM_PLUGIN_BASENAME ] ) ) {
-            $update[ FM_PLUGIN_BASENAME ] = true;
+    private function load_updater() {
+        if ( ! class_exists( 'EDD_SL_Plugin_Updater' ) ) {
+            include __DIR__ . '/libraries/edd/EDD_SL_Plugin_Updater.php';
         }
 
         foreach ( $this->plugins as $plugin ) {
-            if ( ! isset( $plugin['basename'] ) ) {
-                continue;
-            }
-            if ( ! isset( $plugin['version'] ) ) {
-                continue;
-            }
-            if ( ! isset( $plugins->response[ $plugin['basename'] ]->slug ) ||
-                 ! in_array( basename( $plugin['basename'], '.php' ), (array) $plugins->response[ $plugin['basename'] ]->slug ) ) {
-                continue;
-            }
-            $update[ $plugin['title'] ] = version_compare( $plugin['version'], $plugins->response[ $plugin['basename'] ]->new_version, '<' );
+            $option = Common::get_option( $plugin['id'], FM_DIRNAME, [] );
+            $license = ! empty( $option['license'] ) ? $option['license'] : '';
+            new \EDD_SL_Plugin_Updater( $this->api_url, $plugin['file'],
+                [
+                    'version' => $plugin['version'],
+                    // current version number
+                    'license' => $license,
+                    // license key
+                    'item_name' => $plugin['title'],
+                    // name of this plugin in the Easy Digital Downloads system
+                    'author' => $plugin['author'],
+                    // author of this plugin
+                ]
+            );
         }
-
-        if ( ! empty( $update ) ) {
-            $update['count'] = count( $update );
-
-            return $update;
-        }
-
-        return false;
     }
 
     private function clear_update_plugins_transient() {
