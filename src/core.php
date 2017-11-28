@@ -112,6 +112,7 @@ final class Core {
         require_once __DIR__ . '/check-folder-structure.php';
         require_once __DIR__ . '/dashboard.php';
         require_once __DIR__ . '/common.php';
+        require_once __DIR__ . '/wp-hooks-interface.php';
         require_once __DIR__ . '/license-manager.php';
         require_once __DIR__ . '/notifications.php';
         require_once __DIR__ . '/licenses.php';
