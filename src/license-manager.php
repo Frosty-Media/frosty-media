@@ -2,6 +2,11 @@
 
 namespace FrostyMedia\Includes;
 
+/**
+ * Class LicenseManager
+ *
+ * @package FrostyMedia\Includes
+ */
 abstract class LicenseManager implements WpHooksInterface {
 
     const OBJECT_NAME = null;
