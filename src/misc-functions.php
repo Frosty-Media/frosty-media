@@ -14,7 +14,7 @@ function frosty_media_screen_icon() {
  */
 function get_frosty_media_screen_icon( $style = 'margin:-2px 10px 0; width:32px;' ) {
 	return sprintf( '<img src="%s" style="float:left; %s">',
-		FrostyMedia\Includes\common::get_data_uri( 'svg/frosty-media.svg', 'svg+xml' ),
+		FrostyMedia\Includes\Common::get_data_uri( 'svg/frosty-media.svg', 'svg+xml' ),
 		$style
 	);
 }
