@@ -41,7 +41,7 @@ class Notifications extends LicenseManager {
      * Register the plugin page
      */
     public function admin_menu() {
-        add_submenu_page(
+        $this->submenu_page = add_submenu_page(
             FM_DIRNAME,
             sprintf( 'Frosty Media %s %s', $this->title, __( 'Submenu Page', FM_DIRNAME ) ),
             sprintf( '%s', $this->title ),
@@ -66,9 +66,15 @@ class Notifications extends LicenseManager {
     }
 
     /**
-     * Registers and enqueues admin-specific JavaScript.
+     * Enqueue Notifications only scripts and styles.
+     *
+     * @param string $hook
      */
-    public function enqueue_scripts() {
+    public function enqueue_scripts( $hook ) {
+        if ( ! in_array( $hook, [ FROSTYMEDIA()->menu_page, $this->submenu_page ] ) ) {
+            return;
+        }
+
         wp_enqueue_style( $this->action, trailingslashit( FM_PLUGIN_URL ) . 'css/admin.css', false, FM_VERSION, 'screen' );
 
         wp_register_script( $this->action, trailingslashit( FM_PLUGIN_URL ) . 'js/admin.js', [ 'jquery' ], FM_VERSION, false );
@@ -81,7 +87,7 @@ class Notifications extends LicenseManager {
             'nonce' => wp_create_nonce( FM_PLUGIN_BASENAME . $this->action . '-nonce' ),
             'loading' => admin_url( '/images/wpspin_light.gif' ),
         ];
-        wp_localize_script( $this->action, static::OBJECT_NAME, $args );
+        wp_localize_script( $this->action, self::OBJECT_NAME, $args );
     }
 
     /**
